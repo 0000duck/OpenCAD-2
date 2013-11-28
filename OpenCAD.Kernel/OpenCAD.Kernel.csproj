@@ -39,7 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Datums\DatumAxis.cs" />
+    <Compile Include="Datums\DatumCoordinateSystem.cs" />
+    <Compile Include="Datums\DatumPlane.cs" />
+    <Compile Include="Geometry\Plane.cs" />
+    <Compile Include="Datums\DatumPoint.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Geometry\Point.cs" />
+    <Compile Include="Geometry\Curve.cs" />
+    <Compile Include="Geometry\Surface.cs" />
     <Compile Include="Maths\Angle.cs" />
     <Compile Include="Maths\Axis.cs" />
     <Compile Include="Maths\AxisAngle.cs" />
@@ -50,9 +58,23 @@
     <Compile Include="Maths\Vect2.cs" />
     <Compile Include="Maths\Vect3.cs" />
     <Compile Include="Maths\Vect4.cs" />
+    <Compile Include="Modeling\BaseModel.cs" />
+    <Compile Include="Modeling\IModel.cs" />
+    <Compile Include="Primatives\AABB.cs" />
+    <Compile Include="Primatives\Cylinder.cs" />
+    <Compile Include="Primatives\Pyramid.cs" />
+    <Compile Include="Primatives\Sphere.cs" />
+    <Compile Include="Primatives\Triangle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Topology\Edge.cs" />
+    <Compile Include="Topology\Face.cs" />
+    <Compile Include="Topology\Vertex.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Modeling\BoundaryRepresentation\" />
+    <Folder Include="Modeling\ConstructiveSolidGeometry\" />
+    <Folder Include="Modeling\Octree\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
