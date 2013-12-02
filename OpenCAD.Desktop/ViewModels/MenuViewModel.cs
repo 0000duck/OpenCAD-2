@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using System;
+using Caliburn.Micro;
 using OpenCAD.Desktop.Commands;
 
 namespace OpenCAD.Desktop.ViewModels
@@ -9,7 +10,7 @@ namespace OpenCAD.Desktop.ViewModels
 
         public BindableCollection<MenuItemViewModel> Items { get; set; }
 
-        public MenuViewModel(IEventAggregator eventAggregator)//, Func<ProjectExplorerViewModel> projectExplorerViewModelBuilder, Func<EventAggregatorDebugViewModel> eventsDebugBuilder, Func<TeapotViewModel> teapotBuilder)
+        public MenuViewModel(IEventAggregator eventAggregator, Func<TeapotViewModel> teapotBuilder)//, Func<ProjectExplorerViewModel> projectExplorerViewModelBuilder, Func<EventAggregatorDebugViewModel> eventsDebugBuilder,)
         {
             _eventAggregator = eventAggregator;
             Items = new BindableCollection<MenuItemViewModel> {
@@ -18,7 +19,7 @@ namespace OpenCAD.Desktop.ViewModels
                     Items = new BindableCollection<MenuItemViewModel> {
                         new MenuItemViewModel {
                             Header = "Open Teapot",
-                            Action = () => _eventAggregator.Publish(new DebugCommand("test"))
+                            Action = () => _eventAggregator.Publish(new AddTabViewCommand {Model = teapotBuilder()})
                         },
                         new MenuItemViewModel {
                             Header = "Close",

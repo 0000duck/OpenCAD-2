@@ -2,11 +2,12 @@
 using System.Collections.Specialized;
 using System.Reactive.Linq;
 using Caliburn.Micro;
+using OpenCAD.Desktop.Commands;
 using Xceed.Wpf.AvalonDock;
 
 namespace OpenCAD.Desktop.ViewModels
 {
-    public class ShellViewModel : Conductor<Screen>//, IHandle<AddTabViewCommand>, IHandle<AddToolViewCommand>
+    public class ShellViewModel : Conductor<Screen>, IHandle<AddTabViewCommand>//, IHandle<AddToolViewCommand>
     {
         private readonly IEventAggregator _eventAggregator;
         //private readonly ProjectManager _projectManager;
@@ -32,37 +33,41 @@ namespace OpenCAD.Desktop.ViewModels
         {
             _eventAggregator = eventAggregator;
             //_projectManager = projectManager;
-            Tabs = new BindableCollection<PropertyChangedBase>();
+            Tabs = new BindableCollection<PropertyChangedBase>
+            {
+
+            };
             Tools = new BindableCollection<PropertyChangedBase> {
                 //projectExplorerViewModelBuilder(),
                 eventsDebugBuilder()
             };
+
             Menu = menu;
 
             InitializeEvents();
         }
 
-        //public void Handle(AddTabViewCommand message)
-        //{
-        //    Tabs.Add(message.Model);
-        //    ActiveDocument = message.Model;
-        //}
+        public void Handle(AddTabViewCommand message)
+        {
+            Tabs.Add(message.Model);
+            ActiveDocument = message.Model;
+        }
 
-        //public void Handle(AddToolViewCommand message)
-        //{
-        //    Tools.Add(message.Model);
-        //}
+        public void Handle(AddToolViewCommand message)
+        {
+            Tools.Add(message.Model);
+        }
 
         private void InitializeEvents()
         {
             var tabsChanged = Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(Tabs, "CollectionChanged");
             var toolsChanged = Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(Tools, "CollectionChanged");
 
-            //tabsChanged.Where(e => e.EventArgs.Action == NotifyCollectionChangedAction.Add).Subscribe(a => _eventAggregator.Publish(new TabAddedEvent { Args = a.EventArgs }));
-            //tabsChanged.Where(e => e.EventArgs.Action == NotifyCollectionChangedAction.Remove).Subscribe(a => _eventAggregator.Publish(new TabRemovedEvent { Args = a.EventArgs }));
+            tabsChanged.Where(e => e.EventArgs.Action == NotifyCollectionChangedAction.Add).Subscribe(a => _eventAggregator.Publish(new TabAddedEvent { Args = a.EventArgs }));
+            tabsChanged.Where(e => e.EventArgs.Action == NotifyCollectionChangedAction.Remove).Subscribe(a => _eventAggregator.Publish(new TabRemovedEvent { Args = a.EventArgs }));
 
-            //toolsChanged.Where(e => e.EventArgs.Action == NotifyCollectionChangedAction.Add).Subscribe(a => _eventAggregator.Publish(new ToolAddedEvent { Args = a.EventArgs }));
-            //toolsChanged.Where(e => e.EventArgs.Action == NotifyCollectionChangedAction.Remove).Subscribe(a => _eventAggregator.Publish(new ToolRemovedEvent { Args = a.EventArgs }));
+            toolsChanged.Where(e => e.EventArgs.Action == NotifyCollectionChangedAction.Add).Subscribe(a => _eventAggregator.Publish(new ToolAddedEvent { Args = a.EventArgs }));
+            toolsChanged.Where(e => e.EventArgs.Action == NotifyCollectionChangedAction.Remove).Subscribe(a => _eventAggregator.Publish(new ToolRemovedEvent { Args = a.EventArgs }));
         }
 
         public void DocumentClosed(DocumentClosedEventArgs e)
