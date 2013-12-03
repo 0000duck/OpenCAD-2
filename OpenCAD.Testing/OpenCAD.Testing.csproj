@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{13CEE632-BA6F-4C73-9709-2E64B8FFDA99}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{53A171FD-0329-4E2A-BBC7-7A25E27627D5}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenCAD.Kernel</RootNamespace>
-    <AssemblyName>OpenCAD.Kernel</AssemblyName>
+    <RootNamespace>OpenCAD.Testing</RootNamespace>
+    <AssemblyName>OpenCAD.Testing</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -39,46 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Datums\DatumAxis.cs" />
-    <Compile Include="Datums\DatumCoordinateSystem.cs" />
-    <Compile Include="Datums\DatumPlane.cs" />
-    <Compile Include="Dimensions\IDimension.cs" />
-    <Compile Include="Features\FeatureFactory.cs" />
-    <Compile Include="Features\IFeature.cs" />
-    <Compile Include="Features\IFeatureFactory.cs" />
-    <Compile Include="Geometry\Plane.cs" />
-    <Compile Include="Datums\DatumPoint.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="Geometry\Point.cs" />
-    <Compile Include="Geometry\Curve.cs" />
-    <Compile Include="Geometry\Surface.cs" />
-    <Compile Include="Maths\Angle.cs" />
-    <Compile Include="Maths\Axis.cs" />
-    <Compile Include="Maths\AxisAngle.cs" />
-    <Compile Include="Maths\Mat4.cs" />
-    <Compile Include="Maths\MathsExtensions.cs" />
-    <Compile Include="Maths\MathsHelper.cs" />
-    <Compile Include="Maths\Quat.cs" />
-    <Compile Include="Maths\Vect2.cs" />
-    <Compile Include="Maths\Vect3.cs" />
-    <Compile Include="Maths\Vect4.cs" />
-    <Compile Include="Modeling\BaseModel.cs" />
-    <Compile Include="Modeling\IModel.cs" />
-    <Compile Include="Primatives\AABB.cs" />
-    <Compile Include="Primatives\Cylinder.cs" />
-    <Compile Include="Primatives\Pyramid.cs" />
-    <Compile Include="Primatives\Sphere.cs" />
-    <Compile Include="Primatives\Triangle.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="References\IFeatureReference.cs" />
-    <Compile Include="Topology\Edge.cs" />
-    <Compile Include="Topology\Face.cs" />
-    <Compile Include="Topology\Vertex.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Modeling\BoundaryRepresentation\" />
-    <Folder Include="Modeling\ConstructiveSolidGeometry\" />
-    <Folder Include="Modeling\Octree\" />
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenCAD.Kernel\OpenCAD.Kernel.csproj">
+      <Project>{13cee632-ba6f-4c73-9709-2e64b8ffda99}</Project>
+      <Name>OpenCAD.Kernel</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
