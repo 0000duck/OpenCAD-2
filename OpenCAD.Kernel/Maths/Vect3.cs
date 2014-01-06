@@ -31,8 +31,6 @@ namespace OpenCAD.Kernel.Maths
             Z = a[2];
         }
 
-
-
         public double Length
         {
             get { return Math.Sqrt(LengthSquared); }
@@ -155,6 +153,11 @@ namespace OpenCAD.Kernel.Maths
         public static Vect3 Lerp(Vect3 start, Vect3 end, double percent)
         {
             return (start + percent * (end - start));
+        }
+
+        public double[] ToArray()
+        {
+            return new [] { X, Y, Z };
         }
     }
 }

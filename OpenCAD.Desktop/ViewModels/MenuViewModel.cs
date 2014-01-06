@@ -1,6 +1,9 @@
 ﻿using System;
 using Caliburn.Micro;
 using OpenCAD.Desktop.Commands;
+using OpenCAD.Kernel.Maths;
+using OpenCAD.Kernel.Modeling.Octree;
+using Microsoft.Win32;
 
 namespace OpenCAD.Desktop.ViewModels
 {
@@ -18,8 +21,33 @@ namespace OpenCAD.Desktop.ViewModels
                     Header = "_FILE",
                     Items = new BindableCollection<MenuItemViewModel> {
                         new MenuItemViewModel {
-                            Header = "Open Teapot",
-                            Action = () => _eventAggregator.Publish(new AddTabViewCommand {Model = teapotBuilder()})
+                            Header = "_Open",
+                            Items = new BindableCollection<MenuItemViewModel> {
+                                new MenuItemViewModel {
+                                    Header = "_Project",
+                                    Action = () =>
+                                        {
+                                            var dlg = new OpenFileDialog
+                                                {
+                                                    DefaultExt = ".cadproj",
+                                                    Filter = "OpenCAD Project|*.cadproj"
+                                                };
+                                            if (dlg.ShowDialog() == true)
+                                            {
+                                                _eventAggregator.Publish(new OpenProjectCommand(dlg.FileName));
+                                            }
+                                        }
+                                },
+                                new MenuItemViewModel {
+                                    Header = "Model",
+                                    Action = () => _eventAggregator.Publish(new OpenModelCommand(new TestPart().Generate()))
+                                },
+                                new MenuItemViewModel {
+                                    Header = "Teapot",
+                                    Action = () => _eventAggregator.Publish(new AddTabViewCommand {Model = teapotBuilder()})
+                                },
+
+                            }
                         },
                         new MenuItemViewModel {
                             Header = "Close",

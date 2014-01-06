@@ -19,20 +19,20 @@ namespace OpenCAD.Kernel.Features
             _features.Add(feature);
         }
         
-        public async void RegenerateAsync()
+        public async Task<IEnumerable<RegenResult>> RegenerateAsync()
         {
             foreach (var feature in _features)
             {
                 feature.MakeDirty();
             }
-
+            var list = new List<RegenResult>();
             //await Task.WhenAll(_features.Select(f => f.RegenerateAsync()));
             foreach (var feature in _features)
             {
-                await feature.RegenerateAsync();
+                list.Add(await feature.RegenerateAsync());
             }
             //Task.WaitAny(_features.Select(f => f.RegenerateAsync()).ToArray());
-
+            return list;
         }
     }
 }

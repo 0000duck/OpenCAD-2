@@ -3,14 +3,17 @@ using System.Collections.Specialized;
 using System.Reactive.Linq;
 using Caliburn.Micro;
 using OpenCAD.Desktop.Commands;
+using OpenCAD.Desktop.Misc;
+using OpenCAD.Kernel.Modeling;
 using Xceed.Wpf.AvalonDock;
 
 namespace OpenCAD.Desktop.ViewModels
 {
-    public class ShellViewModel : Conductor<Screen>, IHandle<AddTabViewCommand>//, IHandle<AddToolViewCommand>
+    public class ShellViewModel : Conductor<Screen>, IHandle<AddTabViewCommand>, IHandle<AddToolViewCommand>, IHandle<OpenModelCommand>
     {
         private readonly IEventAggregator _eventAggregator;
-        //private readonly ProjectManager _projectManager;
+        private readonly Func<IModel, RendererViewModel> _renderBuilder;
+        private readonly ProjectManager _projectManager;
         private PropertyChangedBase _activeDocument;
 
         public PropertyChangedBase ActiveDocument
@@ -29,10 +32,11 @@ namespace OpenCAD.Desktop.ViewModels
         public MenuViewModel Menu { get; set; }
 
 
-        public ShellViewModel(IEventAggregator eventAggregator, MenuViewModel menu, Func<EventAggregatorDebugViewModel> eventsDebugBuilder)//,,Func<ProjectExplorerViewModel> projectExplorerViewModelBuilder,ProjectManager projectManager,)
+        public ShellViewModel(IEventAggregator eventAggregator, MenuViewModel menu, ProjectManager projectManager, Func<EventAggregatorDebugViewModel> eventsDebugBuilder, Func<IModel, RendererViewModel> renderBuilder)//,,Func<ProjectExplorerViewModel> projectExplorerViewModelBuilderr,)
         {
             _eventAggregator = eventAggregator;
-            //_projectManager = projectManager;
+            _projectManager = projectManager;
+            _renderBuilder = renderBuilder;
             Tabs = new BindableCollection<PropertyChangedBase>
             {
 
@@ -43,7 +47,7 @@ namespace OpenCAD.Desktop.ViewModels
             };
 
             Menu = menu;
-
+            
             InitializeEvents();
         }
 
@@ -80,6 +84,11 @@ namespace OpenCAD.Desktop.ViewModels
         public void DocumentClosing(DocumentClosingEventArgs e)
         {
             
+        }
+
+        public void Handle(OpenModelCommand message)
+        {
+            _eventAggregator.Publish(new AddTabViewCommand {Model = _renderBuilder(message.Model)});
         }
     }
 }

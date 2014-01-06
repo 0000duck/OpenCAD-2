@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using OpenCAD.Kernel.References;
 
@@ -10,57 +11,23 @@ namespace OpenCAD.Kernel.Features
     public interface IFeature
     {
         string Name { get; }
-        bool Regenerate();
+        RegenResult Regenerate();
         bool Regenerated { get; }
+        RegenResult RegenStatus { get; }
         void MakeDirty();
-        Task RegenerateAsync();
+        Task<RegenResult> RegenerateAsync();
         IEnumerable<IFeatureReference> References { get; }
     }
 
-    public abstract class BaseFeature:IFeature
-    {
-        protected List<IFeatureReference> _references;
-        public string Name { get; private set; }
-        public bool Regenerated { get; private set; }
+    public enum RegenResult {Failed = 0, Successful = 1}
 
-        public IEnumerable<IFeatureReference> References
-        {
-            get { return _references; }
-        }
-
-        protected BaseFeature()
-        {
-            _references = new List<IFeatureReference>();
-        }
-
-        public abstract bool Regenerate();
-
-        public void MakeDirty()
-        {
-            Regenerated = false;
-        }
-
-        public async Task RegenerateAsync()
-        {
-            if (!Regenerated)
-            {
-                await Task.Delay(1000);
-                foreach (var featureReference in References)
-                {
-                    await featureReference.Parent.RegenerateAsync();
-                }
-                var response = Task.Run(() => Regenerate());
-                Regenerated = await response;
-            }
-        }
-    }
     public class DatumOrigin : BaseFeature
     {
-        public override bool Regenerate()
+        public override RegenResult Regenerate()
         {
             Console.WriteLine(" > Regen Origin");
-            
-            return true;
+            Thread.Sleep(5000);
+            return RegenResult.Successful;
         }
     }
     public class DatumPlane:BaseFeature
@@ -69,11 +36,11 @@ namespace OpenCAD.Kernel.Features
         {
             _references.AddRange(references);
         }
-        public override bool Regenerate()
+        public override RegenResult Regenerate()
         {
             Console.WriteLine(" > Regen Plane");
 
-            return true;
+            return RegenResult.Successful;
         }
     }
 

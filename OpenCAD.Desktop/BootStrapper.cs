@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using Autofac;
 using Autofac.Core;
 using Caliburn.Micro;
+using OpenCAD.Desktop.Misc;
 using OpenCAD.Desktop.ViewModels;
+using OpenCAD.Kernel.Graphics;
+using OpenCAD.Kernel.Graphics.OpenGLRenderer;
 using IContainer = Autofac.IContainer;
 
 namespace OpenCAD.Desktop
@@ -61,7 +61,9 @@ namespace OpenCAD.Desktop
 
         protected override void ConfigureContainer(ContainerBuilder builder)
         {
-            //builder.RegisterType<ProjectManager>().AsSelf().SingleInstance();
+            builder.RegisterType<ProjectManager>().AsSelf().SingleInstance();
+            builder.RegisterType<OpenGLRenderer>().As<IRenderer>();
+            builder.RegisterType<OrthographicCamera>().As<ICamera>();
         }
     }
 
