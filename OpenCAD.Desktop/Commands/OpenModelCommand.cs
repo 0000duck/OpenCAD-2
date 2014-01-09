@@ -1,13 +1,14 @@
-﻿using OpenCAD.Kernel.Modeling;
+﻿using OpenCAD.Desktop.Models;
+using OpenCAD.Kernel.Modeling;
 
 namespace OpenCAD.Desktop.Commands
 {
     public class OpenModelCommand
     {
-        public IModel Model { get; private set; }
-        public OpenModelCommand(IModel model)
+        public IItemModel ItemModel { get; private set; }
+        public OpenModelCommand(IItemModel itemModel)
         {
-            Model = model;
+            ItemModel = itemModel;
         }
     }
 }

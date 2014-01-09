@@ -1,0 +1,11 @@
+﻿{
+	"Name" : "Test Project",
+    "Items": [
+        {
+            "FilePath": "test.cadpart",
+        },
+		{
+            "FilePath": "test2.cadpart",
+        }
+    ]
+}

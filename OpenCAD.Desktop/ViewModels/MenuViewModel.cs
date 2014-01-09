@@ -39,10 +39,6 @@ namespace OpenCAD.Desktop.ViewModels
                                         }
                                 },
                                 new MenuItemViewModel {
-                                    Header = "Model",
-                                    Action = () => _eventAggregator.Publish(new OpenModelCommand(new TestPart().Generate()))
-                                },
-                                new MenuItemViewModel {
                                     Header = "Teapot",
                                     Action = () => _eventAggregator.Publish(new AddTabViewCommand {Model = teapotBuilder()})
                                 },

@@ -4,8 +4,8 @@ namespace OpenCAD.Desktop.Commands
 {
     public class ProjectOpenedEvent
     {
-        public ProjectModel Project { get; private set; }
-        public ProjectOpenedEvent(ProjectModel project)
+        public IProjectModel Project { get; private set; }
+        public ProjectOpenedEvent(IProjectModel project)
         {
             Project = project;
         }

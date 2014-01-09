@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Caliburn.Micro;
 using OpenCAD.Desktop.Commands;
 using OpenCAD.Desktop.Misc;
+using OpenCAD.Desktop.Models;
 using OpenCAD.Kernel.Modeling;
 using Xceed.Wpf.AvalonDock;
 
@@ -13,6 +14,7 @@ namespace OpenCAD.Desktop.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly Func<IModel, RendererViewModel> _renderBuilder;
+        private readonly Func<IItemModel, ItemViewModel> _itemViewModelBuilder;
         private readonly ProjectManager _projectManager;
         private PropertyChangedBase _activeDocument;
 
@@ -32,17 +34,21 @@ namespace OpenCAD.Desktop.ViewModels
         public MenuViewModel Menu { get; set; }
 
 
-        public ShellViewModel(IEventAggregator eventAggregator, MenuViewModel menu, ProjectManager projectManager, Func<EventAggregatorDebugViewModel> eventsDebugBuilder, Func<IModel, RendererViewModel> renderBuilder)//,,Func<ProjectExplorerViewModel> projectExplorerViewModelBuilderr,)
+        public ShellViewModel(
+            IEventAggregator eventAggregator, 
+            MenuViewModel menu, ProjectManager projectManager, Func<EventAggregatorDebugViewModel> eventsDebugBuilder, 
+            Func<IModel, RendererViewModel> renderBuilder, Func<ProjectExplorerViewModel> projectExplorerViewModelBuilder, Func<IItemModel,ItemViewModel> itemViewModelBuilder )//,,)
         {
             _eventAggregator = eventAggregator;
             _projectManager = projectManager;
             _renderBuilder = renderBuilder;
+            _itemViewModelBuilder = itemViewModelBuilder;
             Tabs = new BindableCollection<PropertyChangedBase>
             {
 
             };
             Tools = new BindableCollection<PropertyChangedBase> {
-                //projectExplorerViewModelBuilder(),
+                projectExplorerViewModelBuilder(),
                 eventsDebugBuilder()
             };
 
@@ -88,7 +94,7 @@ namespace OpenCAD.Desktop.ViewModels
 
         public void Handle(OpenModelCommand message)
         {
-            _eventAggregator.Publish(new AddTabViewCommand {Model = _renderBuilder(message.Model)});
+            _eventAggregator.Publish(new AddTabViewCommand { Model = _itemViewModelBuilder(message.ItemModel) });
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,44 +11,31 @@ namespace OpenCAD.Desktop.Models
 {
     public class ProjectModel : PropertyChangedBase, IProjectModel
     {
-        public string Name { get; private set; }
+        public string Name { get; set; }
+        public string Directory { get; set; }
 
-        IReadOnlyObservableCollection<IPartModel> IProjectModel.Parts
+        private IReadOnlyObservableCollection<IItemModel> _readOnlyParts;
+
+        IReadOnlyObservableCollection<IItemModel> IProjectModel.Items
         {
             get { return _readOnlyParts; }
         }
 
-        private ObservableCollection<PartModel> _parts;
-        private IReadOnlyObservableCollection<IPartModel> _readOnlyParts;
+        private ObservableCollection<ItemModel> _items;
 
-        public ObservableCollection<PartModel> Parts
+
+        public ObservableCollection<ItemModel> Items
         {
-            get { return _parts; }
+            get { return _items; }
             set
             {
-                if (Equals(value, _parts)) return;
-                _parts = value;
-                _readOnlyParts = value.WrapReadOnly<PartModel, IPartModel>();
-                NotifyOfPropertyChange(() => Parts);
+                if (Equals(value, _items)) return;
+                _items = value;
+                _readOnlyParts = value.WrapReadOnly<ItemModel, IItemModel>();
+
+                NotifyOfPropertyChange(() => Items);
             }
         }
-    }
-
-    public class PartModel : PropertyChangedBase, IPartModel
-    {
-        public string Name { get; private set; }
-    }
-
-    public interface IProjectModel : INotifyPropertyChanged
-    {
-        string Name { get; }
-
-        IReadOnlyObservableCollection<IPartModel> Parts { get; }
-    }
-
-    public interface IPartModel : INotifyPropertyChanged
-    {
-        string Name { get; }
 
     }
 }

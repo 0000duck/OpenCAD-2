@@ -43,6 +43,30 @@
     <Reference Include="Caliburn.Micro">
       <HintPath>..\packages\Caliburn.Micro.1.5.2\lib\net45\Caliburn.Micro.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Roslyn.Compilers">
+      <HintPath>..\packages\Roslyn.Compilers.Common.1.2.20906.2\lib\net45\Roslyn.Compilers.dll</HintPath>
+    </Reference>
+    <Reference Include="Roslyn.Compilers.CSharp">
+      <HintPath>..\packages\Roslyn.Compilers.CSharp.1.2.20906.2\lib\net45\Roslyn.Compilers.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Roslyn.Compilers.VisualBasic">
+      <HintPath>..\packages\Roslyn.Compilers.VisualBasic.1.2.20906.2\lib\net45\Roslyn.Compilers.VisualBasic.dll</HintPath>
+    </Reference>
+    <Reference Include="Roslyn.Services">
+      <HintPath>..\packages\Roslyn.Services.Common.1.2.20906.2\lib\net45\Roslyn.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="Roslyn.Services.CSharp">
+      <HintPath>..\packages\Roslyn.Services.CSharp.1.2.20906.2\lib\net45\Roslyn.Services.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Roslyn.Services.VisualBasic">
+      <HintPath>..\packages\Roslyn.Services.VisualBasic.1.2.20906.2\lib\net45\Roslyn.Services.VisualBasic.dll</HintPath>
+    </Reference>
+    <Reference Include="Roslyn.Utilities">
+      <HintPath>..\packages\Roslyn.Services.Common.1.2.20906.2\lib\net45\Roslyn.Utilities.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -109,12 +133,17 @@
     <Compile Include="Misc\AutobinderTemplateSelector.cs" />
     <Compile Include="Misc\IReadOnlyObservableCollection.cs" />
     <Compile Include="Misc\ProjectManager.cs" />
+    <Compile Include="Models\IItemModel.cs" />
+    <Compile Include="Models\IProjectModel.cs" />
+    <Compile Include="Models\ItemModel.cs" />
     <Compile Include="Models\ProjectModel.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="TestPart.cs" />
     <Compile Include="ViewModels\AvalonViewModelBaseBase.cs" />
     <Compile Include="ViewModels\EventAggregatorDebugViewModel.cs" />
     <Compile Include="ViewModels\MenuItemViewModel.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />
+    <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\ProjectExplorerViewModel.cs" />
     <Compile Include="ViewModels\RendererViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
@@ -122,8 +151,14 @@
     <Compile Include="Views\EventAggregatorDebugView.xaml.cs">
       <DependentUpon>EventAggregatorDebugView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ItemView.xaml.cs">
+      <DependentUpon>ItemView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MenuView.xaml.cs">
       <DependentUpon>MenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProjectExplorerView.xaml.cs">
+      <DependentUpon>ProjectExplorerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RendererView.xaml.cs">
       <DependentUpon>RendererView.xaml</DependentUpon>
@@ -143,7 +178,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ProjectExplorerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -178,12 +221,15 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="test2.cadpart" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="test.cadpart" />
+    <None Include="Test.cadproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
