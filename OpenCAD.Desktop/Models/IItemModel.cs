@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using OpenCAD.Kernel.Modeling;
 
 namespace OpenCAD.Desktop.Models
 {
@@ -6,6 +7,7 @@ namespace OpenCAD.Desktop.Models
     {
         string Name { get; }
         string Contents { get; set; }
+        IModel Model { get; set; }
         //void Save();
         //void 
     }

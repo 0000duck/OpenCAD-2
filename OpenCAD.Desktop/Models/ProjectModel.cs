@@ -13,6 +13,7 @@ namespace OpenCAD.Desktop.Models
     {
         public string Name { get; set; }
         public string Directory { get; set; }
+        public IEnumerable<string> References { get; set; } 
 
         private IReadOnlyObservableCollection<IItemModel> _readOnlyParts;
 
@@ -22,8 +23,6 @@ namespace OpenCAD.Desktop.Models
         }
 
         private ObservableCollection<ItemModel> _items;
-
-
         public ObservableCollection<ItemModel> Items
         {
             get { return _items; }
@@ -32,10 +31,8 @@ namespace OpenCAD.Desktop.Models
                 if (Equals(value, _items)) return;
                 _items = value;
                 _readOnlyParts = value.WrapReadOnly<ItemModel, IItemModel>();
-
                 NotifyOfPropertyChange(() => Items);
             }
         }
-
     }
 }

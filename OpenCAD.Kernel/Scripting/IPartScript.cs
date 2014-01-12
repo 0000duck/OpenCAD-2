@@ -8,10 +8,10 @@ using OpenCAD.Kernel.Modeling.Octree;
 
 namespace OpenCAD.Kernel.Scripting
 {
-    public interface IPartScript<T> where T : IModel
+    public interface IPartScript
     {
         IEnumerable<IPartScriptOption> Options();
-        T Generate();
+        IModel Generate();
     }
 
     public interface IPartScriptOption
@@ -19,14 +19,14 @@ namespace OpenCAD.Kernel.Scripting
         
     }
 
-    public class TestPart:IPartScript<OctreeModel>
+    public class TestPart:IPartScript
     {
         public IEnumerable<IPartScriptOption> Options()
         {
             throw new NotImplementedException();
         }
 
-        public OctreeModel Generate()
+        public IModel Generate()
         {
             throw new NotImplementedException();
         }

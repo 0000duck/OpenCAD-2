@@ -16,7 +16,7 @@ namespace OpenCAD.Desktop.Misc
     {
         private readonly IEventAggregator _eventAggregator;
 
-        protected IProjectModel Project { get; private set; }
+        public IProjectModel Project { get; private set; }
 
         public ProjectManager(IEventAggregator eventAggregator)
         {
@@ -33,6 +33,7 @@ namespace OpenCAD.Desktop.Misc
                 {
                     Name = json.Name,
                     Directory = dir,
+                    References = new ObservableCollection<string>( ((object)json.References).Select(p => p.ToString()).Cast<string>()),
                     Items = new ObservableCollection<ItemModel>(
                         ((object)json.Items).Select(p => new ItemModel
                         {

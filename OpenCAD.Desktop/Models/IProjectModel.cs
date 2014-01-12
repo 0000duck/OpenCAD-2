@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using OpenCAD.Desktop.Misc;
 
 namespace OpenCAD.Desktop.Models
@@ -8,5 +9,6 @@ namespace OpenCAD.Desktop.Models
         string Name { get; }
         string Directory { get; }
         IReadOnlyObservableCollection<IItemModel> Items { get; }
+        IEnumerable<string> References { get; set; } 
     }
 }

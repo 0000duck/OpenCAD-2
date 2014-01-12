@@ -7,5 +7,7 @@
 		{
             "FilePath": "test2.cadpart",
         }
-    ]
+    ],
+	"References" : ["mscorlib","System","System.Core","System.Data","Microsoft.CSharp"]
+
 }

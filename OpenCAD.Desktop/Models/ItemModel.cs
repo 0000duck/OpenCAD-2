@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using OpenCAD.Kernel.Modeling;
 
 namespace OpenCAD.Desktop.Models
 {
@@ -7,6 +8,7 @@ namespace OpenCAD.Desktop.Models
         public string Name { get; set; }
         public string FilePath { get; set; }
         public string Contents { get; set; }
+        public IModel Model { get; set; }
     }
     
 }
