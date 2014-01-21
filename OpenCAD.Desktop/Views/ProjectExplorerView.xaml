@@ -7,11 +7,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel>
-
+        <StackPanel Name="Buttons">
+            <Button Name="LoadProject">
+                Load Project...
+            </Button>
+        </StackPanel>
+        <StackPanel Name="Project">
         <ListView Name="Project_Items">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
-                    <Setter Property="cal:Message.Attach" Value="[Event MouseDoubleClick] = [Action ShowModel($dataContext)]"/>
+                    <Setter Property="cal:Message.Attach" Value="[Event MouseDoubleClick] = [Action Open($dataContext)]"/>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
@@ -32,6 +37,6 @@
                 </TreeViewItem.ItemContainerStyle>
             </TreeViewItem>
         </TreeView>-->
-
+        </StackPanel>
     </StackPanel>
 </UserControl>

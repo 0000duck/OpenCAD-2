@@ -118,6 +118,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Misc\AutofacBootstrapper.cs" />
     <Compile Include="Commands\AddPartCommand.cs" />
     <Compile Include="Commands\AddTabViewCommand.cs" />
     <Compile Include="Commands\AddToolViewCommand.cs" />
@@ -131,23 +132,22 @@
     <Compile Include="Commands\ToolRemovedEvent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Misc\AutobinderTemplateSelector.cs" />
+    <Compile Include="Misc\EventAggregationAutoSubscriptionModule.cs" />
     <Compile Include="Misc\IReadOnlyObservableCollection.cs" />
     <Compile Include="Misc\ProjectManager.cs" />
-    <Compile Include="Models\IItemModel.cs" />
-    <Compile Include="Models\IProjectModel.cs" />
-    <Compile Include="Models\ItemModel.cs" />
-    <Compile Include="Models\ProjectModel.cs" />
-    <Compile Include="Test.cs" />
     <Compile Include="TestPart.cs" />
     <Compile Include="ViewModels\AvalonViewModelBaseBase.cs" />
     <Compile Include="ViewModels\EventAggregatorDebugViewModel.cs" />
     <Compile Include="ViewModels\MenuItemViewModel.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
+    <Compile Include="ViewModels\OutputViewModel.cs" />
+    <Compile Include="ViewModels\PartItemViewModel.cs" />
     <Compile Include="ViewModels\ProjectExplorerViewModel.cs" />
     <Compile Include="ViewModels\RendererViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\TeapotViewModel.cs" />
+    <Compile Include="ViewModels\TextItemViewModel.cs" />
     <Compile Include="Views\EventAggregatorDebugView.xaml.cs">
       <DependentUpon>EventAggregatorDebugView.xaml</DependentUpon>
     </Compile>
@@ -156,6 +156,12 @@
     </Compile>
     <Compile Include="Views\MenuView.xaml.cs">
       <DependentUpon>MenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OutputView.xaml.cs">
+      <DependentUpon>OutputView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PartItemView.xaml.cs">
+      <DependentUpon>PartItemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProjectExplorerView.xaml.cs">
       <DependentUpon>ProjectExplorerView.xaml</DependentUpon>
@@ -174,6 +180,9 @@
     <Compile Include="Views\TeapotView.xaml.cs">
       <DependentUpon>TeapotView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TextItemView.xaml.cs">
+      <DependentUpon>TextItemView.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\EventAggregatorDebugView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -183,6 +192,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OutputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PartItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -199,6 +216,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\TeapotView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TextItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -234,7 +255,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="GUI\index.html" />
   </ItemGroup>

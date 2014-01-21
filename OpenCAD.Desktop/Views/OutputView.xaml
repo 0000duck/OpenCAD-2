@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="OpenCAD.Desktop.Views.RendererView"
+﻿<UserControl x:Class="OpenCAD.Desktop.Views.OutputView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:openGlRenderer="clr-namespace:OpenCAD.Kernel.Graphics.OpenGLRenderer;assembly=OpenCAD.Kernel.Graphics.OpenGLRenderer"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Image x:Name="image" />
+    <ListView ItemsSource="{Binding OutputItems}">
+    </ListView>
 </UserControl>

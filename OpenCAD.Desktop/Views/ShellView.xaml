@@ -6,7 +6,7 @@
         xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:Infrastructure="clr-namespace:OpenCAD.Desktop.Misc"
-        Title="ShellView" Height="500" Width="800">
+        Title="ShellView" Height="500" Width="800" WindowState="Maximized">
     <DockPanel>
         <ContentControl Name="Menu" DockPanel.Dock="Top" />
         <avalonDock:DockingManager Name="Manager"

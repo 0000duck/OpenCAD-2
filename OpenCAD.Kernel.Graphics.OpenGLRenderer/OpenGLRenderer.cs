@@ -99,7 +99,7 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
 
             GL.GenBuffers(1, vbo);
             GL.BindBuffer(OpenGL.GL_ARRAY_BUFFER, vbo[0]);
-            IntPtr pointer = GCHandle.Alloc(vertices, GCHandleType.Pinned).AddrOfPinnedObject();
+            var pointer = GCHandle.Alloc(vertices, GCHandleType.Pinned).AddrOfPinnedObject();
             GL.BufferData(OpenGL.GL_ARRAY_BUFFER, vertices.Length * sizeof(float), pointer, OpenGL.GL_STATIC_DRAW);
 
         }

@@ -12,4 +12,8 @@
             return "OpenProjectCommand: " + FileName;
         }
     }
+    public class OpenProjectDialog
+    {
+
+    }
 }

@@ -2,15 +2,25 @@
 using System.Diagnostics;
 using Caliburn.Micro;
 using OpenCAD.Desktop.Commands;
-using OpenCAD.Desktop.Models;
+using OpenCAD.Kernel.Structure;
 
 namespace OpenCAD.Desktop.ViewModels
 {
     public class ProjectExplorerViewModel : AvalonViewModelBaseBase, IHandle<ProjectOpenedEvent>
     {
         private readonly IEventAggregator _eventAggregator;
-        private IProjectModel _project;
-        public IProjectModel Project
+        private IProject _project;
+
+        public bool ProjectIsVisible
+        {
+            get { return Project != null; }
+        }
+        public bool ButtonsIsVisible
+        {
+            get { return Project == null; }
+        }
+
+        public IProject Project
         {
             get { return _project; }
             set
@@ -18,8 +28,8 @@ namespace OpenCAD.Desktop.ViewModels
                 if (Equals(value, _project)) return;
                 _project = value;
                 NotifyOfPropertyChange(() => Project);
-                //NotifyOfPropertyChange(() => ProjectIsVisible);
-                ///NotifyOfPropertyChange(() => ButtonsIsVisible);
+                NotifyOfPropertyChange(() => ProjectIsVisible);
+                NotifyOfPropertyChange(() => ButtonsIsVisible);
             }
         }
 
@@ -34,9 +44,14 @@ namespace OpenCAD.Desktop.ViewModels
             Project = message.Project;
         }
 
-        public void ShowModel(IItemModel itemModel)
+        public void LoadProject()
         {
-            _eventAggregator.Publish(new OpenModelCommand(itemModel));
+            _eventAggregator.Publish(new OpenProjectDialog());
+        }
+
+        public void Open(IProjectItem item)
+        {
+           _eventAggregator.Publish(new OpenItemCommand(item));
         }
     }
 }

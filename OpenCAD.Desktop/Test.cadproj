@@ -1,5 +1,6 @@
 ﻿{
 	"Name" : "Test Project",
+	"References" : ["mscorlib","System","System.Core","System.Data","Microsoft.CSharp"],
     "Items": [
         {
             "FilePath": "test.cadpart",
@@ -8,6 +9,4 @@
             "FilePath": "test2.cadpart",
         }
     ],
-	"References" : ["mscorlib","System","System.Core","System.Data","Microsoft.CSharp"]
-
 }

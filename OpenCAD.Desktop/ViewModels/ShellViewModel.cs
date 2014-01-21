@@ -1,20 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Reactive.Linq;
 using Caliburn.Micro;
 using OpenCAD.Desktop.Commands;
 using OpenCAD.Desktop.Misc;
-using OpenCAD.Desktop.Models;
 using OpenCAD.Kernel.Modeling;
+using OpenCAD.Kernel.Structure;
 using Xceed.Wpf.AvalonDock;
 
 namespace OpenCAD.Desktop.ViewModels
 {
-    public class ShellViewModel : Conductor<Screen>, IHandle<AddTabViewCommand>, IHandle<AddToolViewCommand>, IHandle<OpenModelCommand>
+    public class ShellViewModel : Conductor<Screen>, IHandle<AddTabViewCommand>, IHandle<AddToolViewCommand>, IHandle<OpenItemCommand>
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly Func<IModel, RendererViewModel> _renderBuilder;
-        private readonly Func<IItemModel, ItemViewModel> _itemViewModelBuilder;
+        private readonly Func<IProjectItem, TextItemViewModel> _itemViewModelBuilder;
+        private readonly Func<PartProjectItem, PartItemViewModel> _partitemViewModelBuilder;
         private readonly ProjectManager _projectManager;
         private PropertyChangedBase _activeDocument;
 
@@ -33,16 +35,21 @@ namespace OpenCAD.Desktop.ViewModels
         public BindableCollection<PropertyChangedBase> Tools { get; set; }
         public MenuViewModel Menu { get; set; }
 
-
         public ShellViewModel(
             IEventAggregator eventAggregator, 
-            MenuViewModel menu, ProjectManager projectManager, Func<EventAggregatorDebugViewModel> eventsDebugBuilder, 
-            Func<IModel, RendererViewModel> renderBuilder, Func<ProjectExplorerViewModel> projectExplorerViewModelBuilder, Func<IItemModel,ItemViewModel> itemViewModelBuilder )//,,)
+            MenuViewModel menu, 
+            ProjectManager projectManager, 
+            Func<EventAggregatorDebugViewModel> eventsDebugBuilder,
+            Func<IModel, RendererViewModel> renderBuilder, 
+            Func<ProjectExplorerViewModel> projectExplorerViewModelBuilder,
+            Func<IProjectItem, TextItemViewModel> itemViewModelBuilder,
+            Func<PartProjectItem, PartItemViewModel> partitemViewModelBuilder)
         {
             _eventAggregator = eventAggregator;
             _projectManager = projectManager;
             _renderBuilder = renderBuilder;
             _itemViewModelBuilder = itemViewModelBuilder;
+            _partitemViewModelBuilder = partitemViewModelBuilder;
             Tabs = new BindableCollection<PropertyChangedBase>
             {
 
@@ -92,9 +99,19 @@ namespace OpenCAD.Desktop.ViewModels
             
         }
 
-        public void Handle(OpenModelCommand message)
+        public void Handle(OpenItemCommand message)
         {
-            _eventAggregator.Publish(new AddTabViewCommand { Model = _itemViewModelBuilder(message.ItemModel) });
+            if (message.Item is PartProjectItem)
+            {
+                _eventAggregator.Publish(new AddTabViewCommand { Model = _partitemViewModelBuilder((PartProjectItem)message.Item) });
+            }
+            else
+            {
+
+                _eventAggregator.Publish(new AddTabViewCommand { Model = _itemViewModelBuilder(message.Item) });
+            }
+
+           // _eventAggregator.Publish(new AddTabViewCommand { Model = _itemViewModelBuilder(message.Item) });
         }
     }
 }

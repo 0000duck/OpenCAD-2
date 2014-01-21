@@ -1,11 +1,11 @@
-﻿using OpenCAD.Desktop.Models;
+﻿using OpenCAD.Kernel.Structure;
 
 namespace OpenCAD.Desktop.Commands
 {
     public class ProjectOpenedEvent
     {
-        public IProjectModel Project { get; private set; }
-        public ProjectOpenedEvent(IProjectModel project)
+        public IProject Project { get; private set; }
+        public ProjectOpenedEvent(IProject project)
         {
             Project = project;
         }

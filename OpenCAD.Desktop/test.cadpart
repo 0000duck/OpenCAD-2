@@ -6,9 +6,8 @@ using OpenCAD.Kernel.Modeling;
 using OpenCAD.Kernel.Modeling.Octree;
 using OpenCAD.Kernel.Primatives;
 using OpenCAD.Kernel.Scripting;
-namespace Test
-{
-    public class TestPart:IPartScript
+
+    public class TestPart:IPartScript,foo
     {
         public IEnumerable<IPartScriptOption> Options()
         {
@@ -28,4 +27,3 @@ namespace Test
             return new OctreeModel(t1, "Test Octree");
         }
     }
-}

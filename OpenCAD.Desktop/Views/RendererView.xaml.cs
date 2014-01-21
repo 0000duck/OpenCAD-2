@@ -27,6 +27,7 @@ namespace OpenCAD.Desktop.Views
     /// </summary>
     public partial class RendererView : UserControl
     {
+
         private readonly IRenderer _renderer;
         private readonly ICamera _camera;
         private DispatcherTimer _timer;
@@ -35,6 +36,7 @@ namespace OpenCAD.Desktop.Views
         {
             InitializeComponent();
 
+         
             _renderer = renderer;
             //info.Text = "Renderer: " + _renderer.Name;
             _camera = camera;
@@ -52,7 +54,7 @@ namespace OpenCAD.Desktop.Views
         {
             _renderer.Update(_camera);
             image.Source = _renderer.Render();
-
+            
         }
 
         public override void OnApplyTemplate()

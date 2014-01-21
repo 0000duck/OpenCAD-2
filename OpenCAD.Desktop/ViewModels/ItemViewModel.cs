@@ -4,9 +4,9 @@ using System.IO;
 using System.Reflection;
 using Caliburn.Micro;
 using OpenCAD.Desktop.Misc;
-using OpenCAD.Desktop.Models;
 using OpenCAD.Kernel.Modeling;
 using OpenCAD.Kernel.Scripting;
+using OpenCAD.Kernel.Structure;
 using Roslyn.Compilers.CSharp;
 using Roslyn.Scripting.CSharp;
 
@@ -16,10 +16,10 @@ namespace OpenCAD.Desktop.ViewModels
     {
         private readonly Func<IModel, RendererViewModel> _rendererViewModelBuilder;
         private readonly ProjectManager _manager;
-        private IItemModel _model;
+        private IProjectItem _model;
         private RendererViewModel _renderer;
 
-        public IItemModel Model
+        public IProjectItem Model
         {
             get { return _model; }
             set
@@ -41,7 +41,7 @@ namespace OpenCAD.Desktop.ViewModels
 
         public BindableCollection<MenuItemViewModel> MenuItems { get; set; }
 
-        public ItemViewModel(IItemModel model, Func<IModel,RendererViewModel> rendererViewModelBuilder, ProjectManager manager)
+        public ItemViewModel(IProjectItem model, Func<IModel, RendererViewModel> rendererViewModelBuilder, ProjectManager manager)
         {
             _rendererViewModelBuilder = rendererViewModelBuilder;
             _manager = manager;
@@ -64,7 +64,7 @@ namespace OpenCAD.Desktop.ViewModels
         private void Test()
         {
             //
-            Renderer = _rendererViewModelBuilder(new PartScriptRunner().Execute(_manager.Project.References,Model.Contents));
+            //Renderer = _rendererViewModelBuilder(new PartScriptRunner().Execute(_manager.Project.References,Model.Contents));
 
             //try
             //{
