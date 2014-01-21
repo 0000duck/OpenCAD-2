@@ -43,7 +43,9 @@ namespace OpenCAD.Desktop.ViewModels
             Func<IModel, RendererViewModel> renderBuilder, 
             Func<ProjectExplorerViewModel> projectExplorerViewModelBuilder,
             Func<IProjectItem, TextItemViewModel> itemViewModelBuilder,
-            Func<PartProjectItem, PartItemViewModel> partitemViewModelBuilder)
+            Func<ItemViewModel> testitemViewModelBuilder,
+            Func<PartProjectItem, PartItemViewModel> partitemViewModelBuilder
+            )
         {
             _eventAggregator = eventAggregator;
             _projectManager = projectManager;
@@ -52,7 +54,7 @@ namespace OpenCAD.Desktop.ViewModels
             _partitemViewModelBuilder = partitemViewModelBuilder;
             Tabs = new BindableCollection<PropertyChangedBase>
             {
-
+                testitemViewModelBuilder(),
             };
             Tools = new BindableCollection<PropertyChangedBase> {
                 projectExplorerViewModelBuilder(),

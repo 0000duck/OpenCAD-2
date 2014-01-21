@@ -85,7 +85,12 @@
     <Compile Include="Graphics\IRenderer.cs" />
     <Compile Include="Graphics\ModelRenderManager.cs" />
     <Compile Include="Graphics\OrthographicCamera.cs" />
-    <Compile Include="IntersectionExtensions.cs" />
+    <Compile Include="Intersection\IntersectionExtensions.cs" />
+    <Compile Include="Intersection\IntersectOperation.cs" />
+    <Compile Include="Intersection\OctreeExtensions.cs" />
+    <Compile Include="Intersection\OctreeNodeOperation.cs" />
+    <Compile Include="Intersection\SubtractOperation.cs" />
+    <Compile Include="Intersection\UnionOperation.cs" />
     <Compile Include="Maths\Angle.cs" />
     <Compile Include="Maths\Axis.cs" />
     <Compile Include="Maths\AxisAngle.cs" />
@@ -97,6 +102,10 @@
     <Compile Include="Maths\Vect3.cs" />
     <Compile Include="Maths\Vect4.cs" />
     <Compile Include="Modeling\BaseModel.cs" />
+    <Compile Include="Modeling\FileFormats\Converters\IFileFormatConverter.cs" />
+    <Compile Include="Modeling\FileFormats\IFileFormat3D.cs" />
+    <Compile Include="Modeling\FileFormats\StereoLithography\STLFileFormat.cs" />
+    <Compile Include="Modeling\FileFormats\StereoLithography\STLTriangle.cs" />
     <Compile Include="Modeling\IModel.cs" />
     <Compile Include="Modeling\Octree\OctreeModel.cs" />
     <Compile Include="Modeling\Octree\OctreeNode.cs" />

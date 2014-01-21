@@ -3,7 +3,7 @@ using System.Linq;
 using OpenCAD.Kernel.Maths;
 using OpenCAD.Kernel.Primatives;
 
-namespace OpenCAD.Kernel
+namespace OpenCAD.Kernel.Intersection
 {
     public static class IntersectionExtensions
     {

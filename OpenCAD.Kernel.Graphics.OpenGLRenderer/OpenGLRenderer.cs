@@ -49,6 +49,7 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             _camera = camera;
 
             GL.MakeCurrent();
+
             GL.Enable(OpenGL.GL_CULL_FACE);
             GL.Enable(OpenGL.GL_DEPTH_TEST);
             GL.Enable(OpenGL.GL_BLEND);
@@ -56,9 +57,10 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
 
             GL.BlendFunc(BlendingSourceFactor.SourceAlpha, BlendingDestinationFactor.OneMinusSourceAlpha);
 
-                    
+            GL.PolygonMode(FaceMode.FrontAndBack, PolygonMode.Lines);
             var vertex = new VertexShader();
             var fragment = new FragmentShader();
+            var geo = new GeometryShader();
 
             vertex.CreateInContext(GL);
             vertex.SetSource(ShaderSource.Vertex);
@@ -68,9 +70,14 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             fragment.SetSource(ShaderSource.Fragment);
             fragment.Compile();
 
+            geo.CreateInContext(GL);
+            geo.SetSource(ShaderSource.Geometry);
+            geo.Compile();
+
             _program.CreateInContext(GL);
             _program.AttachShader(vertex);
             _program.AttachShader(fragment);
+            _program.AttachShader(geo);
             _program.Link();
 
             _uniforms.Model = GL.GetUniformLocation(_program.ProgramObject, "Model");
@@ -103,11 +110,13 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             GL.BufferData(OpenGL.GL_ARRAY_BUFFER, vertices.Length * sizeof(float), pointer, OpenGL.GL_STATIC_DRAW);
 
         }
-
+        Random rnd = new Random();
         public override void Update(ICamera camera)
         {
             GL.MakeCurrent();
-            _camera.Model *= Mat4.RotateZ(Angle.FromDegrees(0.5));
+            _camera.Model *= Mat4.RotateX(Angle.FromDegrees(1 + rnd.NextDouble()));
+            _camera.Model *= Mat4.RotateY(Angle.FromDegrees(1 + rnd.NextDouble()));
+            _camera.Model *= Mat4.RotateZ(Angle.FromDegrees(1 + rnd.NextDouble()));
             _program.Push(GL, null);
             {
                 GL.UniformMatrix4(_uniforms.Model, 1, false, _camera.Model.ToColumnMajorArrayFloat());
@@ -152,6 +161,29 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             GL.SetDimensions(width, height);
             GL.Viewport(0, 0, width, height);
             
+        }
+    }
+
+    public class GeometryShader : Shader
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SharpGL.SceneGraph.Shaders.FragmentShader"/> class.
+        /// 
+        /// </summary>
+        public GeometryShader()
+        {
+            Name = "Geometry Shader";
+        }
+
+        /// <summary>
+        /// Create in the context of the supplied OpenGL instance.
+        /// 
+        /// </summary>
+        /// <param name="gl">The OpenGL instance.</param>
+        public override void CreateInContext(OpenGL gl)
+        {
+            ShaderObject = gl.CreateShader(0x8DD9);
+            CurrentOpenGLContext = gl;
         }
     }
 }

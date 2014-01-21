@@ -9,7 +9,7 @@ namespace OpenCAD.Kernel.Graphics
         public Vect3 Eye { get; set; }
         public Vect3 Target { get; set; }
         public Vect3 Up { get; set; }
-        private float _dist = 10;
+        private float _dist = 20;
         public OrthographicCamera()
         {
             Near = 1;

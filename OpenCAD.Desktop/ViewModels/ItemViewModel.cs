@@ -16,18 +16,7 @@ namespace OpenCAD.Desktop.ViewModels
     {
         private readonly Func<IModel, RendererViewModel> _rendererViewModelBuilder;
         private readonly ProjectManager _manager;
-        private IProjectItem _model;
         private RendererViewModel _renderer;
-
-        public IProjectItem Model
-        {
-            get { return _model; }
-            set
-            {
-                NotifyOfPropertyChange(() => Model);
-                _model = value;
-            }
-        }
 
         public RendererViewModel Renderer
         {
@@ -41,12 +30,12 @@ namespace OpenCAD.Desktop.ViewModels
 
         public BindableCollection<MenuItemViewModel> MenuItems { get; set; }
 
-        public ItemViewModel(IProjectItem model, Func<IModel, RendererViewModel> rendererViewModelBuilder, ProjectManager manager)
+        public ItemViewModel( Func<IModel, RendererViewModel> rendererViewModelBuilder, ProjectManager manager)
         {
             _rendererViewModelBuilder = rendererViewModelBuilder;
             _manager = manager;
-            Model = model;
-            Title = model.Name;
+
+            Title = "test";
             Renderer = rendererViewModelBuilder(new TestPart().Generate());
 
             MenuItems = new BindableCollection<MenuItemViewModel> {
