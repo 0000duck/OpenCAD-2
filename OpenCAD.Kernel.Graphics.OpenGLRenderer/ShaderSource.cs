@@ -15,16 +15,25 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
                 return @"#version 400
 precision highp float; 
 
-
 uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 Projection;
 
 layout (location = 0) in vec3 vert; 
+layout (location = 1) in vec4 colour; 
+layout (location = 2) in float size; 
+
+out VertexData
+{
+  vec4 color;
+  float size;
+} outData;
 
 void main()
 {
     gl_Position = (Projection * View * Model) * vec4(vert, 1);
+    outData.size = size;
+    outData.color = colour;
 }
 "; } }
 
@@ -34,9 +43,16 @@ void main()
             {
                 return @"#version 400
 precision highp float; 
+
+in FragmentData
+{
+    vec3 normal;
+    vec4 color;
+} frag;
+
 void main()
 {
-    gl_FragColor = vec4(0.4,0.4,0.8,1.0);
+    gl_FragColor = frag.color;
 }
 ";
             }
@@ -87,10 +103,12 @@ uniform vec3 normals[6] =
     vec3(-1.0,  0.0,  0.0),
 };
 
-in VoxelData
+in VertexData
 {
-    vec4 color;
-} vs[];
+  vec4 color;
+  float size;
+} outData[];
+
 
 out FragmentData 
 { 
@@ -104,9 +122,9 @@ void main(void)
     { 
         for (int c=0; c<4; c++) 
         { 
-            vec4 t = vec4(corners[faces[f * 4 + c]].xyz * 0.1,1.0);
+            vec4 t = vec4(corners[faces[f * 4 + c]].xyz * (outData[0].size),1.0);
             gl_Position = gl_in[0].gl_Position + (Projection * View * Model * t); 
-            frag.color  = vs[0].color; 
+            frag.color  = outData[0].color; 
             frag.normal = normals[f]; 
             EmitVertex(); 
         } 

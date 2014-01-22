@@ -96,6 +96,9 @@ namespace OpenCAD.Kernel.Modeling.Octree
             }
         }
 
-
+        public override string ToString()
+        {
+            return Size.ToString();
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
@@ -57,7 +58,7 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
 
             GL.BlendFunc(BlendingSourceFactor.SourceAlpha, BlendingDestinationFactor.OneMinusSourceAlpha);
 
-            GL.PolygonMode(FaceMode.FrontAndBack, PolygonMode.Lines);
+            GL.PolygonMode(FaceMode.FrontAndBack, PolygonMode.Filled);
             var vertex = new VertexShader();
             var fragment = new FragmentShader();
             var geo = new GeometryShader();
@@ -80,11 +81,17 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             _program.AttachShader(geo);
             _program.Link();
 
+            Debug.WriteLine(_program.InfoLog);
+            foreach (var attachedShader in _program.AttachedShaders)
+            {
+                Debug.WriteLine(attachedShader.InfoLog);
+            }
+
             _uniforms.Model = GL.GetUniformLocation(_program.ProgramObject, "Model");
             _uniforms.View = GL.GetUniformLocation(_program.ProgramObject, "View");
             _uniforms.Projection = GL.GetUniformLocation(_program.ProgramObject, "Projection");
 
-
+            
 
             var list = new List<float>();
 
@@ -99,6 +106,8 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
                 foreach (var octreeNode in filled)
                 {
                     list.AddRange(octreeNode.Center.ToArray().Select(d=>(float)d));
+                    list.AddRange(new float[] { (float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble(), 1f });
+                    list.Add((float) octreeNode.Size);
                 }
             }
             var vertices = list.ToArray();
@@ -114,9 +123,9 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
         public override void Update(ICamera camera)
         {
             GL.MakeCurrent();
-            _camera.Model *= Mat4.RotateX(Angle.FromDegrees(1 + rnd.NextDouble()));
-            _camera.Model *= Mat4.RotateY(Angle.FromDegrees(1 + rnd.NextDouble()));
-            _camera.Model *= Mat4.RotateZ(Angle.FromDegrees(1 + rnd.NextDouble()));
+            _camera.Model *= Mat4.RotateX(Angle.FromDegrees(0.5));
+            _camera.Model *= Mat4.RotateY(Angle.FromDegrees(0.6));
+            _camera.Model *= Mat4.RotateZ(Angle.FromDegrees(0.8));
             _program.Push(GL, null);
             {
                 GL.UniformMatrix4(_uniforms.Model, 1, false, _camera.Model.ToColumnMajorArrayFloat());
@@ -135,10 +144,20 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             gl.PointSize(5);
 
             
-            gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, vbo[0]);
-            gl.EnableVertexAttribArray(0);
-            gl.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false, 0, new IntPtr(0));
+
+
             _program.Push(gl, null);
+
+            gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, vbo[0]);
+            const int stride = sizeof(float)*8;
+            gl.EnableVertexAttribArray(0);
+            gl.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false, stride, new IntPtr(0));
+
+            gl.EnableVertexAttribArray(1);
+            gl.VertexAttribPointer(1, 4, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 3));
+
+            gl.EnableVertexAttribArray(2);
+            gl.VertexAttribPointer(2, 1, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 7));
 
             gl.DrawArrays(OpenGL.GL_POINTS, 0, count);
             _program.Pop(gl, null);
