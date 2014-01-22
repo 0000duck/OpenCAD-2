@@ -38,7 +38,7 @@ namespace OpenCAD.Desktop
             //    return OctreeNode.NodeIntersectResult.False;
             //});
             //return new OctreeModel(t1.Intersect(t2), "Test Octree");
-            return new OctreeModel( new OctreeNode(Vect3.Zero, 16.0, 8).Intersect(s1), "Test Octree");
+            return new OctreeModel( new OctreeNode(Vect3.Zero, 16.0, 9).Intersect(s1), "Test Octree");
         }
     }
 }

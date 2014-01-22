@@ -23,17 +23,17 @@ layout (location = 0) in vec3 vert;
 layout (location = 1) in vec4 colour; 
 layout (location = 2) in float size; 
 
-out VertexData
+out Data
 {
   vec4 color;
   float size;
-} outData;
+} v;
 
 void main()
 {
     gl_Position = (Projection * View * Model) * vec4(vert, 1);
-    outData.size = size;
-    outData.color = colour;
+    v.size = size;
+    v.color = colour;
 }
 "; } }
 
@@ -103,12 +103,12 @@ uniform vec3 normals[6] =
     vec3(-1.0,  0.0,  0.0),
 };
 
-in VertexData
+
+in Data
 {
   vec4 color;
   float size;
-} outData[];
-
+} v[];
 
 out FragmentData 
 { 
@@ -122,9 +122,9 @@ void main(void)
     { 
         for (int c=0; c<4; c++) 
         { 
-            vec4 t = vec4(corners[faces[f * 4 + c]].xyz * (outData[0].size),1.0);
+            vec4 t = vec4(corners[faces[f * 4 + c]].xyz * (v[0].size),1.0);
             gl_Position = gl_in[0].gl_Position + (Projection * View * Model * t); 
-            frag.color  = outData[0].color; 
+            frag.color  = v[0].color; 
             frag.normal = normals[f]; 
             EmitVertex(); 
         } 

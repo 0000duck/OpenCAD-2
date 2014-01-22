@@ -106,8 +106,7 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
                 foreach (var octreeNode in filled)
                 {
                     list.AddRange(octreeNode.Center.ToArray().Select(d=>(float)d));
-                    list.AddRange(new float[] { (float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble(), 1f });
-                    list.Add((float) octreeNode.Size);
+                    list.AddRange(new float[] { (float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble(), 1f, (float)octreeNode.Size });
                 }
             }
             var vertices = list.ToArray();
