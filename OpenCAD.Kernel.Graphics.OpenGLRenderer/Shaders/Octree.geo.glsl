@@ -1,68 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
-{
-    public static class ShaderSource
-    {
-        public static string Vertex
-        {
-            get
-            {
-                return @"#version 400
-precision highp float; 
-
-uniform mat4 Model;
-uniform mat4 View;
-uniform mat4 Projection;
-
-layout (location = 0) in vec3 vert; 
-layout (location = 1) in vec4 colour; 
-layout (location = 2) in float size; 
-
-out Data
-{
-  vec4 color;
-  float size;
-} v;
-
-void main()
-{
-    gl_Position = (Projection * View * Model) * vec4(vert, 1);
-    v.size = size;
-    v.color = colour;
-}
-"; } }
-
-        public static string Fragment
-        {
-            get
-            {
-                return @"#version 400
-precision highp float; 
-
-in FragmentData
-{
-    vec3 normal;
-    vec4 color;
-} frag;
-
-void main()
-{
-    gl_FragColor = frag.color;
-}
-";
-            }
-        }
-
-        public static string Geometry
-        {
-            get
-            {
-                return @"#version 330
+﻿#version 330
 
 layout (points) in;
 layout (triangle_strip, max_vertices=24) out;
@@ -130,10 +66,4 @@ void main(void)
         } 
         EndPrimitive(); 
     } 
-} ";
-            }
-        }
-
-
-    }
 }
