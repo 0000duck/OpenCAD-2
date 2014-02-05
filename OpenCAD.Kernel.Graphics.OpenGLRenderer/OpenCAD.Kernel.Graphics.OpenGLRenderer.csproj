@@ -58,6 +58,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buffers\Bind.cs" />
+    <Compile Include="Buffers\FBO.cs" />
+    <Compile Include="Buffers\VAO.cs" />
+    <Compile Include="Buffers\VBO.cs" />
+    <Compile Include="GeometryShader.cs" />
     <Compile Include="IBindable.cs" />
     <Compile Include="Buffers\IBuffer.cs" />
     <Compile Include="Extensions.cs" />

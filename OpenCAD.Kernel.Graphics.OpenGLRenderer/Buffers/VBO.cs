@@ -9,7 +9,7 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer.Buffers
 
         readonly uint[] _handle = new uint[1];
 
-        public VBO(OpenGL gl )
+        public VBO(OpenGL gl)
         {
             _gl = gl;
             _gl.GenBuffers(1, _handle);
@@ -22,11 +22,8 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer.Buffers
 
         public void Update(object data, int size)
         {
-            using (new Bind(this))
-            {
-                var pointer = GCHandle.Alloc(data, GCHandleType.Pinned).AddrOfPinnedObject();
-                _gl.BufferData(OpenGL.GL_ARRAY_BUFFER, size, pointer, OpenGL.GL_STATIC_DRAW);
-            }
+            var pointer = GCHandle.Alloc(data, GCHandleType.Pinned).AddrOfPinnedObject();
+            _gl.BufferData(OpenGL.GL_ARRAY_BUFFER, size, pointer, OpenGL.GL_STATIC_DRAW);
         }
 
         public void UnBind()
@@ -34,6 +31,4 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer.Buffers
             _gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, 0);
         }
     }
-
-
 }

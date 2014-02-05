@@ -13,7 +13,7 @@ namespace OpenCAD.Kernel.Graphics
     public interface IRenderer
     {
         string Name { get; }
-        void Load(IModel model, ICamera camera);
+        void Load(IModel model, ICamera camera, int width, int height);
         void Update(ICamera camera);
         ImageSource Render();
         void Resize(int width, int height);
@@ -21,7 +21,7 @@ namespace OpenCAD.Kernel.Graphics
     public abstract class BaseRenderer:IRenderer
     {
         public string Name { get; protected set; }
-        public abstract void Load(IModel model, ICamera camera);
+        public abstract void Load(IModel model, ICamera camera, int width, int height);
         public abstract void Update(ICamera camera);
         public abstract ImageSource Render();
         public abstract void Resize(int width, int height);
@@ -37,7 +37,7 @@ namespace OpenCAD.Kernel.Graphics
             Name = "Null Renderer";
         }
 
-        public override void Load(IModel model, ICamera camera)
+        public override void Load(IModel model, ICamera camera, int width, int height)
         {
             
         }

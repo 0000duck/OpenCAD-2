@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using OpenCAD.Kernel.Graphics.OpenGLRenderer.Buffers;
 using OpenCAD.Kernel.Maths;
 using OpenCAD.Kernel.Modeling;
 using OpenCAD.Kernel.Modeling.Octree;
@@ -21,8 +22,8 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
     {
         public OpenGL GL;
         private ICamera _camera;
-        private ShaderProgram _program;
-        private ShaderProgram _flatprogram;
+        //private ShaderProgram _program;
+       // private ShaderProgram _flatprogram;
 
         
         public OpenGLRenderer()
@@ -33,21 +34,17 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
 
         }
 
-        readonly uint[] _vbo = new uint[2];
-        readonly uint[] _vao = new uint[2];
-        readonly uint[] _fbo = new uint[1];
+        //readonly uint[] _fbo = new uint[1];
         private int _count;
 
-        public struct ShaderUniforms
-        {
-            public int Model;
-            public int View;
-            public int Projection;
-        };
+        private OctreeShader _octreeProgram;
+        private FBO _fbo;
+        private VBO _cubeBuffer;
+        private VAO _cubes;
 
-        private ShaderUniforms _uniforms;
+        private FlatShader _flatProgram;
 
-        public override void Load(IModel model, ICamera camera)
+        public override void Load(IModel model, ICamera camera, int width, int height)
         {
             _camera = camera;
 
@@ -71,13 +68,18 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
 
             GL.PolygonMode(FaceMode.FrontAndBack, PolygonMode.Filled);
 
-            GL.GenFramebuffersEXT(1,_fbo);
-            GL.GenVertexArrays(2, _vao);
-            GL.GenBuffers(2, _vbo);
 
 
-            _program = GenOctProgram();
-            _flatprogram = GenFlatProgram();
+            //GL.GenFramebuffersEXT(1,_fbo);
+
+            _fbo = new FBO(GL, width,height);
+
+
+            _cubes = new VAO(GL);
+            _cubeBuffer = new VBO(GL);
+            _octreeProgram = new OctreeShader(GL);
+
+            _flatProgram = new FlatShader(GL);
             
 
             var list = new List<float>();
@@ -104,119 +106,50 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             }
             var vertices = list.ToArray();
 
-
-
-            GL.BindVertexArray(_vao[0]);
-
- 
-            GL.BindBuffer(OpenGL.GL_ARRAY_BUFFER, _vbo[0]);
-            var pointer = GCHandle.Alloc(vertices, GCHandleType.Pinned).AddrOfPinnedObject();
-            GL.BufferData(OpenGL.GL_ARRAY_BUFFER, vertices.Length * sizeof(float), pointer, OpenGL.GL_STATIC_DRAW);
-
-            const int stride = sizeof(float) * 8;
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false, stride, new IntPtr(0));
-            
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 4, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 3));
-            
-            GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 1, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 7));
-            GL.BindVertexArray(0);
-
-
-
-
-
-            GenFlat();
-
-
-
-        }
-
-
-        private ShaderProgram GenOctProgram()
-        {
-            var program =  new ShaderProgram();
-            var vertex = new VertexShader();
-            var fragment = new FragmentShader();
-            var geo = new GeometryShader();
-
-            vertex.CreateInContext(GL);
-            vertex.SetSource(File.ReadAllText("Shaders/Octree.vert.glsl"));
-            vertex.Compile();
-
-            fragment.CreateInContext(GL);
-            fragment.SetSource(File.ReadAllText("Shaders/Octree.frag.glsl"));
-            fragment.Compile();
-
-            geo.CreateInContext(GL);
-            geo.SetSource(File.ReadAllText("Shaders/Octree.geo.glsl"));
-            geo.Compile();
-
-            program.CreateInContext(GL);
-            program.AttachShader(vertex);
-            program.AttachShader(fragment);
-            program.AttachShader(geo);
-            program.Link();
-
-            Debug.WriteLine(program.InfoLog);
-            foreach (var attachedShader in program.AttachedShaders)
+            using (new Bind(_cubes))
+            using (new Bind(_cubeBuffer))
             {
-                Debug.WriteLine(attachedShader.InfoLog);
+                _cubeBuffer.Update(vertices, vertices.Length * sizeof(float));
+                const int stride = sizeof(float) * 8;
+                GL.EnableVertexAttribArray(0);
+                GL.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false, stride, new IntPtr(0));
+
+                GL.EnableVertexAttribArray(1);
+                GL.VertexAttribPointer(1, 4, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 3));
+
+                GL.EnableVertexAttribArray(2);
+                GL.VertexAttribPointer(2, 1, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 7));
+                GL.BindVertexArray(0);
             }
 
-            _uniforms.Model = GL.GetUniformLocation(program.ProgramObject, "Model");
-            _uniforms.View = GL.GetUniformLocation(program.ProgramObject, "View");
-            _uniforms.Projection = GL.GetUniformLocation(program.ProgramObject, "Projection");
-            return program;
-        }
+            
 
-        private ShaderProgram GenFlatProgram()
-        {
-            var program = new ShaderProgram();
-            var vertex = new VertexShader();
-            var fragment = new FragmentShader();
 
-            vertex.CreateInContext(GL);
-            vertex.SetSource(File.ReadAllText("Shaders/Flat.vert.glsl"));
-            vertex.Compile();
 
-            fragment.CreateInContext(GL);
-            fragment.SetSource(File.ReadAllText("Shaders/Flat.frag.glsl"));
-            fragment.Compile();
+            _flat = new VAO(GL);
+            _flatBuffer = new VBO(GL);
 
-            program.CreateInContext(GL);
-            program.AttachShader(vertex);
-            program.AttachShader(fragment);
-            program.Link();
-
-            Debug.WriteLine(program.InfoLog);
-            foreach (var attachedShader in program.AttachedShaders)
+            using (new Bind(_flat))
+            using (new Bind(_flatBuffer))
             {
-                Debug.WriteLine(attachedShader.InfoLog);
+                var flatData = new float[] { -1, -1, 0, 0, 1, 1, -1, 0, 1, 1, 1, 1, 0, 1, 0, -1, 1, 0, 0, 0 };
+                _flatBuffer.Update(flatData, flatData.Length * sizeof(float));
+                const int stride = sizeof(float) * 5;
+                GL.EnableVertexAttribArray(0);
+                GL.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false, stride, new IntPtr(0));
+
+                GL.EnableVertexAttribArray(1);
+                GL.VertexAttribPointer(1, 2, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 3));
+
+                GL.BindVertexArray(0);
             }
-            return program;
+
         }
 
-        private void GenFlat()
-        {
-            GL.BindVertexArray(_vao[1]);
-            GL.BindBuffer(OpenGL.GL_ARRAY_BUFFER, _vbo[1]);
-            var flatData = new float[] { -1, -1, 0, 0, 1, 1, -1, 0, 1, 1, 1, 1, 0, 1, 0, -1, 1, 0, 0, 0 };
-            var flatPointer = GCHandle.Alloc(flatData, GCHandleType.Pinned).AddrOfPinnedObject();
-            GL.BufferData(OpenGL.GL_ARRAY_BUFFER, flatData.Length * sizeof(float), flatPointer, OpenGL.GL_STATIC_DRAW);
 
-            const int stride = sizeof(float) * 5;
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false, stride, new IntPtr(0));
 
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 2, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 3));
-
-            GL.BindVertexArray(0);
-        }
-
+        private VAO _flat;
+        private VBO _flatBuffer;
 
 
 
@@ -225,33 +158,45 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
         {
             GL.MakeCurrent();
             _camera.Model *= Mat4.RotateX(Angle.FromDegrees(0.5)) * Mat4.RotateY(Angle.FromDegrees(0.6)) * Mat4.RotateZ(Angle.FromDegrees(0.8));
-            _program.Push(GL, null);
+
+
+            using (new Bind(_octreeProgram))
             {
-                GL.UniformMatrix4(_uniforms.Model, 1, false, _camera.Model.ToColumnMajorArrayFloat());
-                GL.UniformMatrix4(_uniforms.View, 1, false, _camera.View.ToColumnMajorArrayFloat());
-                GL.UniformMatrix4(_uniforms.Projection, 1, false, _camera.Projection.ToColumnMajorArrayFloat()); 
+                _octreeProgram.Model = _camera.Model;
+                _octreeProgram.View = _camera.View;
+                _octreeProgram.Projection = _camera.Projection;
             }
-            _program.Pop(GL, null);
+
         }
 
         public override ImageSource Render()
         {
             GL.MakeCurrent();
 
-    //        GL.BindFramebufferEXT(OpenGL.GL_FRAMEBUFFER_EXT, _fbo[0]);
+
 
             GL.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             GL.ClearColor(0.137f, 0.121f, 0.125f, 0f);
 
-            _program.Push(GL, null);
-            GL.BindVertexArray(_vao[0]);
-            GL.DrawArrays(OpenGL.GL_POINTS, 0, _count);
-            GL.BindVertexArray(0);
-            _program.Pop(GL, null);
-       //     GL.BindFramebufferEXT(OpenGL.GL_FRAMEBUFFER_EXT, 0);
+            using (new Bind(_fbo))
+            using (new Bind(_octreeProgram))
+            using (new Bind(_cubes))
+            {
+                GL.DrawArrays(OpenGL.GL_POINTS, 0, _count);
+            }
 
+            GL.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            GL.ClearColor(0.137f, 0.121f, 0.125f, 0f);
 
+            using (new Bind(_flatProgram))
+            using (new Bind(_flat))
+            using (new Bind(_fbo.ColorTexture))
+            {
+                GL.Disable(OpenGL.GL_DEPTH_TEST);
+                GL.DrawArrays(OpenGL.GL_QUADS, 0, 4);
+            }
 
+            
             //_flatprogram.Push(GL,null);
             //GL.BindVertexArray(_vao[1]);
             //GL.Disable(OpenGL.GL_DEPTH_TEST);
@@ -274,12 +219,6 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             //glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
-
-
-
-
-
-
             GL.Blit(IntPtr.Zero);
             var provider = GL.RenderContextProvider as FBORenderContextProvider;
             if (provider == null) return null;
@@ -297,20 +236,109 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             GL.MakeCurrent();
             GL.SetDimensions(width, height);
             GL.Viewport(0, 0, width, height);
-            
+            _fbo.Resize(width, height);
         }
     }
 
-    public class GeometryShader : Shader
+
+
+    public class OctreeShader:ShaderBindable
     {
-        public GeometryShader()
+        private readonly int _modelLocation;
+        private readonly int _viewLocation;
+        private readonly int _projectionLocation;
+
+        public Mat4 Model
         {
-            Name = "Geometry Shader";
+            set
+            {
+                _gl.UniformMatrix4(_modelLocation, 1, false, value.ToColumnMajorArrayFloat());
+            }
         }
-        public override void CreateInContext(OpenGL gl)
+        public Mat4 View
         {
-            ShaderObject = gl.CreateShader(0x8DD9);
-            CurrentOpenGLContext = gl;
+            set
+            {
+                _gl.UniformMatrix4(_viewLocation, 1, false, value.ToColumnMajorArrayFloat());
+            }
+        }
+
+        public Mat4 Projection
+        {
+            set
+            {
+                _gl.UniformMatrix4(_projectionLocation, 1, false, value.ToColumnMajorArrayFloat());
+            }
+        }
+
+
+
+        public OctreeShader(OpenGL gl) : base(gl)
+        {
+            _program = new ShaderProgram();
+            var vertex = new VertexShader();
+            var fragment = new FragmentShader();
+            var geo = new GeometryShader();
+
+            vertex.CreateInContext(gl);
+            vertex.SetSource(File.ReadAllText("Shaders/Octree.vert.glsl"));
+            vertex.Compile();
+
+            fragment.CreateInContext(gl);
+            fragment.SetSource(File.ReadAllText("Shaders/Octree.frag.glsl"));
+            fragment.Compile();
+
+            geo.CreateInContext(gl);
+            geo.SetSource(File.ReadAllText("Shaders/Octree.geo.glsl"));
+            geo.Compile();
+
+            _program.CreateInContext(gl);
+            _program.AttachShader(vertex);
+            _program.AttachShader(fragment);
+            _program.AttachShader(geo);
+            _program.Link();
+
+            Debug.WriteLine(_program.InfoLog);
+            foreach (var attachedShader in _program.AttachedShaders)
+            {
+                Debug.WriteLine(attachedShader.InfoLog);
+            }
+
+            _modelLocation = gl.GetUniformLocation(_program.ProgramObject, "Model");
+            _viewLocation = gl.GetUniformLocation(_program.ProgramObject, "View");
+            _projectionLocation = gl.GetUniformLocation(_program.ProgramObject, "Projection");
         }
     }
+
+    public class FlatShader : ShaderBindable
+    {
+
+        public FlatShader(OpenGL gl)
+            : base(gl)
+        {
+            _program = new ShaderProgram();
+            var vertex = new VertexShader();
+            var fragment = new FragmentShader();
+
+            vertex.CreateInContext(gl);
+            vertex.SetSource(File.ReadAllText("Shaders/Flat.vert.glsl"));
+            vertex.Compile();
+
+            fragment.CreateInContext(gl);
+            fragment.SetSource(File.ReadAllText("Shaders/Flat.frag.glsl"));
+            fragment.Compile();
+
+            _program.CreateInContext(gl);
+            _program.AttachShader(vertex);
+            _program.AttachShader(fragment);
+            _program.Link();
+
+            Debug.WriteLine(_program.InfoLog);
+            foreach (var attachedShader in _program.AttachedShaders)
+            {
+                Debug.WriteLine(attachedShader.InfoLog);
+            }
+        }
+    }
+
 }

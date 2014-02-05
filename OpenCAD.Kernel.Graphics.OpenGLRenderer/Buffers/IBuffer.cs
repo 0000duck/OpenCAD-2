@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpGL;
+using SharpGL.SceneGraph.Shaders;
 
 namespace OpenCAD.Kernel.Graphics.OpenGLRenderer.Buffers
 {
@@ -12,21 +14,25 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer.Buffers
 
     }
 
-    public class FBO:IBuffer
+    public class ShaderBindable:IBindable
     {
-        public FBO()
-        {
+        protected readonly OpenGL _gl;
+        protected ShaderProgram _program;
 
+        public ShaderBindable(OpenGL gl)
+        {
+            _gl = gl;
         }
+
 
         public void Bind()
         {
-            throw new System.NotImplementedException();
+            _program.Push(_gl, null);
         }
 
         public void UnBind()
         {
-            throw new System.NotImplementedException();
+            _program.Pop(_gl, null);
         }
     }
 }

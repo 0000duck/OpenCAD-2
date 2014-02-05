@@ -41,7 +41,7 @@ namespace OpenCAD.Desktop.Views
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            _renderer.Load(((RendererViewModel)DataContext).Model, _camera);
+            _renderer.Load(((RendererViewModel)DataContext).Model, _camera,(int) Width,(int) Height);
             _renderer.Resize((int) Width,(int) Height);
             _timer.Start();
         }
