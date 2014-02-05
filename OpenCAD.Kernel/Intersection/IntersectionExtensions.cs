@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using OpenCAD.Kernel.Geometry;
 using OpenCAD.Kernel.Maths;
 using OpenCAD.Kernel.Primatives;
 
@@ -7,6 +8,31 @@ namespace OpenCAD.Kernel.Intersection
 {
     public static class IntersectionExtensions
     {
+
+        public static bool On(this Point p1, Point p2)
+        {
+            return p1.Position.X.NearlyEquals(p2.Position.X) && 
+                   p1.Position.Y.NearlyEquals(p2.Position.Y) &&
+                   p1.Position.Z.NearlyEquals(p2.Position.Z);
+        }
+
+
+        public static bool On(this Point p, Line l)
+        {
+            var a = l.Start.Position;
+            var b = l.End.Position;
+            var c = p.Position;
+
+            var r = (b - a).CrossProduct(c - a).LengthSquared.NearlyEquals(0.0);
+
+
+            return false;
+        }
+
+
+
+
+
         public static bool Inside(this Vect3 v, Sphere s)
         {
             return (s.Center - v).LengthSquared < s.Radius * s.Radius;

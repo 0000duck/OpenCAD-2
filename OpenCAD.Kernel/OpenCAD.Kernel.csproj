@@ -75,10 +75,10 @@
     <Compile Include="Features\FeatureFactory.cs" />
     <Compile Include="Features\IFeature.cs" />
     <Compile Include="Features\IFeatureFactory.cs" />
+    <Compile Include="Geometry\Line.cs" />
     <Compile Include="Geometry\Plane.cs" />
-    <Compile Include="Datums\DatumPoint.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Geometry\Point.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Geometry\Curve.cs" />
     <Compile Include="Geometry\Surface.cs" />
     <Compile Include="Graphics\ICamera.cs" />

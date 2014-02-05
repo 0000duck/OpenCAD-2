@@ -17,5 +17,5 @@ in FragmentData
 void main()
 {
     gl_FragColor = vec4(abs(frag.normal.x), abs(frag.normal.y), abs(frag.normal.z), 1);
-    //gl_FragColor = frag.color;
+    gl_FragColor = frag.color;
 }

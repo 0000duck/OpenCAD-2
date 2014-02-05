@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using OpenCAD.Kernel.Maths;
 using OpenCAD.Kernel.Primatives;
@@ -17,6 +18,8 @@ namespace OpenCAD.Kernel.Modeling.Octree
 
         public IEnumerable<OctreeNode> Children { get; private set; }
 
+        public Color Color { get; private set; } 
+
         public OctreeNode(Vect3 center, Double size, NodeState state, int level, int maxLevel)
         {
             Center = center;
@@ -25,6 +28,7 @@ namespace OpenCAD.Kernel.Modeling.Octree
             Level = level;
             MaxLevel = maxLevel;
             Children = Enumerable.Empty<OctreeNode>();
+            Color = Color.Purple;
         }
         public OctreeNode(Vect3 center, Double size, int maxLevel)
             : this(center, size, NodeState.Empty, 0, maxLevel)
