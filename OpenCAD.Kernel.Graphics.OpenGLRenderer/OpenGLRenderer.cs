@@ -35,10 +35,10 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
         private int _count;
 
 
-        private FBO _fbo;
 
 
-        private FlatShader _flatProgram;
+        private PostProcesser _postProcesser;
+
 
         private OctreeRenderer _octreeRenderer;
         private BackgroundRenderer _backgroundRenderer;
@@ -67,12 +67,10 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
 
             GL.PolygonMode(FaceMode.FrontAndBack, PolygonMode.Filled);
 
-            _fbo = new FBO(GL, width,height);
-
-
+ 
+            _postProcesser = new PostProcesser(GL,width,height);
     
 
-            _flatProgram = new FlatShader(GL);
             _backgroundRenderer = new BackgroundRenderer(GL);
 
        
@@ -83,25 +81,11 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
                 _octreeRenderer = new OctreeRenderer(octreeModel, GL);
             }
 
-            _flat = new VAO(GL);
-            _flatBuffer = new VBO(GL);
-
-            using (new Bind(_flat))
-            using (new Bind(_flatBuffer))
-            {
-                var flatData = new float[] { -1, -1, 1, -1, -1, 1, 1, 1, };
-                _flatBuffer.Update(flatData, flatData.Length * sizeof(float));
-                GL.EnableVertexAttribArray(0);
-                GL.VertexAttribPointer(0, 2, OpenGL.GL_FLOAT, false, 0, new IntPtr(0));
-                GL.BindVertexArray(0);
-            }
-
         }
 
 
 
-        private VAO _flat;
-        private VBO _flatBuffer;
+
 
 
 
@@ -121,20 +105,14 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             GL.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             GL.ClearColor(1f, 0f, 0f, 0f);
 
-
-            using (new Bind(_fbo))
+            _postProcesser.Capture(() =>
             {
                 GL.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
                 _backgroundRenderer.Render();
                 _octreeRenderer.Render();
-            }
+            });
 
-            using (new Bind(_flatProgram))
-            using (new Bind(_flat))
-            using (new Bind(_fbo.ColorTexture))
-            {
-                GL.DrawArrays(OpenGL.GL_TRIANGLE_STRIP, 0, 4);
-            }
+            _postProcesser.Render();
 
             GL.Blit(IntPtr.Zero);
             var provider = GL.RenderContextProvider as FBORenderContextProvider;
@@ -153,7 +131,7 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             GL.MakeCurrent();
             GL.SetDimensions(width, height);
             GL.Viewport(0, 0, width, height);
-            _fbo.Resize(width, height);
+            _postProcesser.Resize(width, height);
         }
     }
 }

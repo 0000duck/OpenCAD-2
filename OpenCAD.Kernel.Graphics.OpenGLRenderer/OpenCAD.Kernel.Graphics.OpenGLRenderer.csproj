@@ -57,6 +57,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PostProcesser.cs" />
     <Compile Include="Shaders\BackgroundShader.cs" />
     <Compile Include="Buffers\Bind.cs" />
     <Compile Include="Buffers\FBO.cs" />
