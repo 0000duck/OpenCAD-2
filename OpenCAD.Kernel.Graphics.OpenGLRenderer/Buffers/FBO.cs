@@ -10,29 +10,39 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer.Buffers
         readonly uint[] _fbo = new uint[1];
         readonly uint[] _renderBuffer = new uint[1];
 
-        public Texture ColorTexture;
+        public BindableTexture ColorBindableTexture;
 
         public FBO(OpenGL gl, int width, int height)
         {
             _gl = gl;
             _gl.GenFramebuffersEXT(1, _fbo);
+            if (width < 1) width = 16;
+            if (height < 1) height = 16;
 
-            ColorTexture = new Texture(_gl);
             using (new Bind(this))
-            using (new Bind(ColorTexture))
+            using (new Bind(ColorBindableTexture = new BindableTexture(_gl)))
             {
-                _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_REPEAT);
-                _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_REPEAT);
+
+                _gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA, width, height, 0, OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_BYTE, null);
+
                 _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
                 _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_NEAREST);
-                _gl.TexImage2D(OpenGL.GL_TEXTURE_2D,0,OpenGL.GL_RGBA8,width,height,0,OpenGL.GL_RGBA8,OpenGL.GL_UNSIGNED_BYTE, IntPtr.Zero);
-                _gl.FramebufferTexture2DEXT(OpenGL.GL_FRAMEBUFFER_EXT, OpenGL.GL_COLOR_ATTACHMENT0_EXT, OpenGL.GL_TEXTURE_2D, ColorTexture.Handle, 0);
+
+
+                _gl.FramebufferTexture2DEXT(OpenGL.GL_FRAMEBUFFER_EXT, OpenGL.GL_COLOR_ATTACHMENT0_EXT, OpenGL.GL_TEXTURE_2D, ColorBindableTexture.Handle, 0);
 
 
                 _gl.GenRenderbuffersEXT(1, _renderBuffer);
                 _gl.BindRenderbufferEXT(OpenGL.GL_RENDERBUFFER_EXT, _renderBuffer[0]);
                 _gl.RenderbufferStorageEXT(OpenGL.GL_RENDERBUFFER_EXT, OpenGL.GL_DEPTH_COMPONENT32, width, height);
+
+
                 _gl.FramebufferRenderbufferEXT(OpenGL.GL_FRAMEBUFFER_EXT, OpenGL.GL_DEPTH_ATTACHMENT_EXT, OpenGL.GL_RENDERBUFFER_EXT, _renderBuffer[0]);
+
+
+
+                var status = _gl.CheckFramebufferStatusEXT(OpenGL.GL_FRAMEBUFFER_EXT);
+                if (status != OpenGL.GL_FRAMEBUFFER_COMPLETE_EXT) throw new Exception();
 
             }
 
@@ -41,10 +51,13 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer.Buffers
         public void Resize(int width, int height)
         {
             using (new Bind(this))
-            using (new Bind(ColorTexture))
+            using (new Bind(ColorBindableTexture))
             {
-                _gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA8, width, height, 0, OpenGL.GL_RGBA8, OpenGL.GL_UNSIGNED_BYTE, IntPtr.Zero);
+                ColorBindableTexture.Resize(width,height);
+                _gl.BindRenderbufferEXT(OpenGL.GL_RENDERBUFFER_EXT, _renderBuffer[0]);
+                _gl.RenderbufferStorageEXT(OpenGL.GL_RENDERBUFFER_EXT, OpenGL.GL_DEPTH_COMPONENT32, width, height);
             }
+
         }
 
         public void Bind()

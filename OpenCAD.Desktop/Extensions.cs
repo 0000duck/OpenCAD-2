@@ -10,6 +10,7 @@ namespace OpenCAD.Desktop
 
         public static IReadOnlyObservableCollection<TResult> WrapReadOnly<TSource, TResult>(this ObservableCollection<TSource> list) where TSource : TResult
         {
+
             return new MyReadOnlyObservableCollection<TSource, TResult>(list);
         }
     }

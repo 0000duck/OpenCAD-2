@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
@@ -13,7 +11,6 @@ using OpenCAD.Kernel.Modeling.Octree;
 using SharpGL;
 using SharpGL.Enumerations;
 using SharpGL.RenderContextProviders;
-using SharpGL.SceneGraph.Shaders;
 using SharpGL.WPF;
 
 namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
@@ -49,7 +46,7 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             _camera = camera;
 
             GL.MakeCurrent();
-
+            GL.Enable(OpenGL.GL_TEXTURE_2D);
             GL.Enable(OpenGL.GL_CULL_FACE);
             GL.Enable(OpenGL.GL_DEPTH_TEST);
             GL.Enable(OpenGL.GL_BLEND);
@@ -67,10 +64,6 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
 
 
             GL.PolygonMode(FaceMode.FrontAndBack, PolygonMode.Filled);
-
-
-
-            //GL.GenFramebuffersEXT(1,_fbo);
 
             _fbo = new FBO(GL, width,height);
 
@@ -173,8 +166,6 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
         {
             GL.MakeCurrent();
 
-
-
             GL.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             GL.ClearColor(0.137f, 0.121f, 0.125f, 0f);
 
@@ -185,38 +176,15 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
                 GL.DrawArrays(OpenGL.GL_POINTS, 0, _count);
             }
 
-            GL.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-            GL.ClearColor(0.137f, 0.121f, 0.125f, 0f);
+
 
             using (new Bind(_flatProgram))
             using (new Bind(_flat))
-            using (new Bind(_fbo.ColorTexture))
+            using (new Bind(_fbo.ColorBindableTexture))
             {
-                GL.Disable(OpenGL.GL_DEPTH_TEST);
+
                 GL.DrawArrays(OpenGL.GL_QUADS, 0, 4);
             }
-
-            
-            //_flatprogram.Push(GL,null);
-            //GL.BindVertexArray(_vao[1]);
-            //GL.Disable(OpenGL.GL_DEPTH_TEST);
-            //GL.DrawArrays(OpenGL.GL_QUADS, 0, 4);
-            //GL.BindVertexArray(0);
-            //_flatprogram.Pop(GL,null);
-
-
-            // Draw cube scene here
-
-            // Bind default framebuffer and draw contents of our framebuffer
-            //
-            //glBindVertexArray(vaoQuad);
-            //
-            //glUseProgram(screenShaderProgram);
-
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_2D, texColorBuffer);
-
-            //glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
             GL.Blit(IntPtr.Zero);
@@ -239,106 +207,4 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             _fbo.Resize(width, height);
         }
     }
-
-
-
-    public class OctreeShader:ShaderBindable
-    {
-        private readonly int _modelLocation;
-        private readonly int _viewLocation;
-        private readonly int _projectionLocation;
-
-        public Mat4 Model
-        {
-            set
-            {
-                _gl.UniformMatrix4(_modelLocation, 1, false, value.ToColumnMajorArrayFloat());
-            }
-        }
-        public Mat4 View
-        {
-            set
-            {
-                _gl.UniformMatrix4(_viewLocation, 1, false, value.ToColumnMajorArrayFloat());
-            }
-        }
-
-        public Mat4 Projection
-        {
-            set
-            {
-                _gl.UniformMatrix4(_projectionLocation, 1, false, value.ToColumnMajorArrayFloat());
-            }
-        }
-
-
-
-        public OctreeShader(OpenGL gl) : base(gl)
-        {
-            _program = new ShaderProgram();
-            var vertex = new VertexShader();
-            var fragment = new FragmentShader();
-            var geo = new GeometryShader();
-
-            vertex.CreateInContext(gl);
-            vertex.SetSource(File.ReadAllText("Shaders/Octree.vert.glsl"));
-            vertex.Compile();
-
-            fragment.CreateInContext(gl);
-            fragment.SetSource(File.ReadAllText("Shaders/Octree.frag.glsl"));
-            fragment.Compile();
-
-            geo.CreateInContext(gl);
-            geo.SetSource(File.ReadAllText("Shaders/Octree.geo.glsl"));
-            geo.Compile();
-
-            _program.CreateInContext(gl);
-            _program.AttachShader(vertex);
-            _program.AttachShader(fragment);
-            _program.AttachShader(geo);
-            _program.Link();
-
-            Debug.WriteLine(_program.InfoLog);
-            foreach (var attachedShader in _program.AttachedShaders)
-            {
-                Debug.WriteLine(attachedShader.InfoLog);
-            }
-
-            _modelLocation = gl.GetUniformLocation(_program.ProgramObject, "Model");
-            _viewLocation = gl.GetUniformLocation(_program.ProgramObject, "View");
-            _projectionLocation = gl.GetUniformLocation(_program.ProgramObject, "Projection");
-        }
-    }
-
-    public class FlatShader : ShaderBindable
-    {
-
-        public FlatShader(OpenGL gl)
-            : base(gl)
-        {
-            _program = new ShaderProgram();
-            var vertex = new VertexShader();
-            var fragment = new FragmentShader();
-
-            vertex.CreateInContext(gl);
-            vertex.SetSource(File.ReadAllText("Shaders/Flat.vert.glsl"));
-            vertex.Compile();
-
-            fragment.CreateInContext(gl);
-            fragment.SetSource(File.ReadAllText("Shaders/Flat.frag.glsl"));
-            fragment.Compile();
-
-            _program.CreateInContext(gl);
-            _program.AttachShader(vertex);
-            _program.AttachShader(fragment);
-            _program.Link();
-
-            Debug.WriteLine(_program.InfoLog);
-            foreach (var attachedShader in _program.AttachedShaders)
-            {
-                Debug.WriteLine(attachedShader.InfoLog);
-            }
-        }
-    }
-
 }
