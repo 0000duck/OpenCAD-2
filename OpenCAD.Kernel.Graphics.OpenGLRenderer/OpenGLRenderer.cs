@@ -34,12 +34,14 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
         //readonly uint[] _fbo = new uint[1];
         private int _count;
 
-        private OctreeShader _octreeProgram;
+
         private FBO _fbo;
-        private VBO _cubeBuffer;
-        private VAO _cubes;
+
 
         private FlatShader _flatProgram;
+
+        private OctreeRenderer _octreeRenderer;
+        private BackgroundRenderer _backgroundRenderer;
 
         public override void Load(IModel model, ICamera camera, int width, int height)
         {
@@ -68,56 +70,18 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             _fbo = new FBO(GL, width,height);
 
 
-            _cubes = new VAO(GL);
-            _cubeBuffer = new VBO(GL);
-            _octreeProgram = new OctreeShader(GL);
+    
 
             _flatProgram = new FlatShader(GL);
-            
+            _backgroundRenderer = new BackgroundRenderer(GL);
 
-            var list = new List<float>();
+       
 
             var octreeModel = model as OctreeModel;
             if (octreeModel != null)
             {
-                var filled = octreeModel.Node.Flatten().Where(o => o.State == NodeState.Filled).ToArray();
-                _count = filled.Length;
-
-                foreach (var octreeNode in filled)
-                {
-                    list.AddRange(octreeNode.Center.ToArray().Select(d=>(float)d));
-
-                    list.AddRange(new[]
-                        {
-                            (float)MathsHelper.Map(octreeNode.Color.R, 0, 255, 0, 1),
-                            (float)MathsHelper.Map(octreeNode.Color.G, 0, 255, 0, 1), 
-                            (float)MathsHelper.Map(octreeNode.Color.B, 0, 255, 0, 1), 
-                            (float)MathsHelper.Map(octreeNode.Color.A, 0, 255, 0, 1), 
-                            (float)octreeNode.Size
-                        });
-                }
+                _octreeRenderer = new OctreeRenderer(octreeModel, GL);
             }
-            var vertices = list.ToArray();
-
-            using (new Bind(_cubes))
-            using (new Bind(_cubeBuffer))
-            {
-                _cubeBuffer.Update(vertices, vertices.Length * sizeof(float));
-                const int stride = sizeof(float) * 8;
-                GL.EnableVertexAttribArray(0);
-                GL.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false, stride, new IntPtr(0));
-
-                GL.EnableVertexAttribArray(1);
-                GL.VertexAttribPointer(1, 4, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 3));
-
-                GL.EnableVertexAttribArray(2);
-                GL.VertexAttribPointer(2, 1, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 7));
-                GL.BindVertexArray(0);
-            }
-
-            
-
-
 
             _flat = new VAO(GL);
             _flatBuffer = new VBO(GL);
@@ -125,15 +89,10 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             using (new Bind(_flat))
             using (new Bind(_flatBuffer))
             {
-                var flatData = new float[] { -1, -1, 0, 0, 1, 1, -1, 0, 1, 1, 1, 1, 0, 1, 0, -1, 1, 0, 0, 0 };
+                var flatData = new float[] { -1, -1, 1, -1, -1, 1, 1, 1, };
                 _flatBuffer.Update(flatData, flatData.Length * sizeof(float));
-                const int stride = sizeof(float) * 5;
                 GL.EnableVertexAttribArray(0);
-                GL.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false, stride, new IntPtr(0));
-
-                GL.EnableVertexAttribArray(1);
-                GL.VertexAttribPointer(1, 2, OpenGL.GL_FLOAT, false, stride, new IntPtr(sizeof(float) * 3));
-
+                GL.VertexAttribPointer(0, 2, OpenGL.GL_FLOAT, false, 0, new IntPtr(0));
                 GL.BindVertexArray(0);
             }
 
@@ -152,14 +111,7 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             GL.MakeCurrent();
             _camera.Model *= Mat4.RotateX(Angle.FromDegrees(0.5)) * Mat4.RotateY(Angle.FromDegrees(0.6)) * Mat4.RotateZ(Angle.FromDegrees(0.8));
 
-
-            using (new Bind(_octreeProgram))
-            {
-                _octreeProgram.Model = _camera.Model;
-                _octreeProgram.View = _camera.View;
-                _octreeProgram.Projection = _camera.Projection;
-            }
-
+            if(_octreeRenderer != null)_octreeRenderer.Update(camera);
         }
 
         public override ImageSource Render()
@@ -167,25 +119,22 @@ namespace OpenCAD.Kernel.Graphics.OpenGLRenderer
             GL.MakeCurrent();
 
             GL.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-            GL.ClearColor(0.137f, 0.121f, 0.125f, 0f);
+            GL.ClearColor(1f, 0f, 0f, 0f);
+
 
             using (new Bind(_fbo))
-            using (new Bind(_octreeProgram))
-            using (new Bind(_cubes))
             {
-                GL.DrawArrays(OpenGL.GL_POINTS, 0, _count);
+                GL.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+                _backgroundRenderer.Render();
+                _octreeRenderer.Render();
             }
-
-
 
             using (new Bind(_flatProgram))
             using (new Bind(_flat))
-            using (new Bind(_fbo.ColorBindableTexture))
+            using (new Bind(_fbo.ColorTexture))
             {
-
-                GL.DrawArrays(OpenGL.GL_QUADS, 0, 4);
+                GL.DrawArrays(OpenGL.GL_TRIANGLE_STRIP, 0, 4);
             }
-
 
             GL.Blit(IntPtr.Zero);
             var provider = GL.RenderContextProvider as FBORenderContextProvider;

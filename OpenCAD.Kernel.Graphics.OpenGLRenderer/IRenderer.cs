@@ -2,7 +2,7 @@
 {
     public interface IOpenGLRenderer
     {
-        void Update();
+        void Update(ICamera camera);
         void Render();
     }
 }
